@@ -1,0 +1,97 @@
+---
+import Layout from './Layout.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  updated?: string;
+}
+
+const { title, description, updated = 'October 29, 2026' } = Astro.props;
+
+const legalLinks = [
+  { href: '/terms', label: 'Terms & Conditions' },
+  { href: '/privacy', label: 'Privacy Policy' },
+  { href: '/cookies', label: 'Cookie Policy' },
+  { href: '/disclaimer', label: 'Disclaimer' },
+  { href: '/returns', label: 'Return & Refund Policy' },
+  { href: '/shipping', label: 'Shipping Policy' },
+  { href: '/accessibility', label: 'Accessibility' },
+  { href: '/intellectual-property', label: 'Intellectual Property' },
+  { href: '/acceptable-use', label: 'Acceptable Use' },
+  { href: '/report-abuse', label: 'Report Abuse' },
+  { href: '/do-not-sell', label: 'Do Not Sell or Share' },
+  { href: '/legal-notice', label: 'Legal Notice' },
+];
+
+const current = Astro.url.pathname.replace(/\/$/, '') || '/';
+const site = 'https://davisweatherstation.com';
+const pageUrl = new URL(current === '/' ? '/' : `${current}/`, site).toString();
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: `${site}/` },
+    { '@type': 'ListItem', position: 2, name: title, item: pageUrl },
+  ],
+};
+---
+
+<Layout title={title} description={description}>
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  <section class="py-10 bg-gradient-to-b from-slate-50 to-white min-h-screen">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav class="mb-6 flex flex-wrap items-center gap-2 text-sm text-gray-600" aria-label="Breadcrumb">
+        <a href="/" class="hover:text-[#00529B]">Home</a>
+        <span class="text-gray-400">/</span>
+        <span class="text-gray-900 font-medium">{title}</span>
+      </nav>
+      <div class="mb-8">
+        <div class="inline-flex items-center px-3 py-1.5 bg-blue-50 text-[#00529B] rounded-full text-xs font-bold uppercase tracking-wider mb-3">
+          Legal &amp; Policies
+        </div>
+        <h1 class="text-4xl md:text-5xl font-bold mb-3">{title}</h1>
+        <p class="text-gray-500 text-sm">Last updated: {updated}</p>
+      </div>
+
+      <div class="lg:grid lg:grid-cols-[250px_1fr] lg:gap-8">
+        <aside class="hidden lg:block">
+          <div class="sticky top-24 bg-white border-2 border-gray-100 rounded-2xl shadow-lg p-5">
+            <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Legal pages</h2>
+            <nav class="space-y-0.5">
+              {legalLinks.map((link) => (
+                <a
+                  href={link.href}
+                  class={`block px-3 py-2 rounded-lg text-sm transition-colors ${
+                    current === link.href
+                      ? 'bg-blue-50 text-[#00529B] font-semibold'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-[#00529B]'
+                  }`}
+                >
+                  {link.label}
+                </a>
+              ))}
+            </nav>
+            <div class="mt-4 pt-4 border-t border-gray-100">
+              <a href="/contact/" class="block text-center px-3 py-2 bg-[#00529B] hover:bg-[#003d73] text-white rounded-lg text-sm font-semibold transition-colors">
+                Questions? Contact us
+              </a>
+            </div>
+          </div>
+        </aside>
+
+        <article class="legal-content bg-white border-2 border-gray-100 rounded-2xl shadow-sm p-7 md:p-10">
+          <slot />
+
+          <div class="mt-10 pt-6 border-t-2 border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <p class="text-sm text-gray-500 m-0">
+              Questions about this page? Visit our{' '}
+              <a href="/contact/">contact page</a>.
+            </p>
+            <a href="/legal-notice/" class="text-sm font-semibold text-[#00529B] hover:underline">Legal notice →</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+</Layout>

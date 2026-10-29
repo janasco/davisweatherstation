@@ -1,0 +1,67 @@
+name: Bug report
+description: Report a problem with the website, product catalog, or quote form
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Davis Weather Station. Please do not include passwords, API tokens, or customer data.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear description of the problem.
+      placeholder: When I submitted the quote form, ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open https://davisweatherstation.com/...
+        2. Click ...
+        3. See ...
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: Page URL
+      placeholder: https://davisweatherstation.com/guide/
+
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device
+      options:
+        - Desktop
+        - Mobile
+        - Tablet
+        - Other
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: Chrome 140, Safari 18, Firefox 135
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshots or console errors
+      description: Drag images here or paste any relevant error messages.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues before opening this report.
+          required: true
+        - label: This report does not contain secrets or personal data.
+          required: true

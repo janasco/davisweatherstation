@@ -1,0 +1,192 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { allProducts, getProduct, relatedProducts } from '../../data/allProducts';
+
+export function getStaticPaths() {
+  return allProducts.map((product) => ({
+    params: { slug: product.slug },
+    props: { product },
+  }));
+}
+
+const { product } = Astro.props;
+const related = relatedProducts(product, 4);
+const shortName =
+  product.name.length > 44 ? product.name.slice(0, 44).replace(/\s+\S*$/, '') : product.name;
+const seoTitle = product.sku ? `${shortName} — ${product.sku}` : product.name;
+
+const site = 'https://davisweatherstation.com';
+const productUrl = `${site}/products/${product.slug}/`;
+const imageUrl = product.image ? new URL(product.image, site).toString() : undefined;
+
+const productSchema = {
+  '@type': 'Product',
+  name: product.name,
+  description: product.description,
+  url: productUrl,
+  ...(imageUrl ? { image: [imageUrl] } : {}),
+  ...(product.sku ? { sku: product.sku } : {}),
+  category: product.category,
+  brand: { '@type': 'Brand', name: 'Davis Instruments' },
+};
+
+const breadcrumbSchema = {
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: `${site}/` },
+    { '@type': 'ListItem', position: 2, name: 'Products', item: `${site}/products/` },
+    { '@type': 'ListItem', position: 3, name: product.name, item: productUrl },
+  ],
+};
+
+const schema = { '@context': 'https://schema.org', '@graph': [productSchema, breadcrumbSchema] };
+---
+
+<Layout title={seoTitle} description={`${product.name}: ${product.description}`.slice(0, 160)}>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+
+  <section class="py-10 bg-gradient-to-b from-slate-50 to-white min-h-screen">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Breadcrumb -->
+      <nav class="mb-8 flex flex-wrap items-center gap-2 text-sm text-gray-600">
+        <a href="/" class="hover:text-[#00529B]">Home</a>
+        <span class="text-gray-400">/</span>
+        <a href="/products/" class="hover:text-[#00529B]">Products</a>
+        <span class="text-gray-400">/</span>
+        <span class="text-gray-900 font-medium line-clamp-1">{product.name}</span>
+      </nav>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-12">
+        <!-- Image -->
+        <div class="bg-gradient-to-br from-gray-100 to-gray-50 rounded-3xl p-8 flex items-center justify-center border border-gray-100 shadow-lg h-[360px] md:h-[440px]">
+          {product.image ? (
+            <img src={product.image} alt={product.name} class="w-full h-full object-contain drop-shadow-sm" loading="eager" decoding="async" fetchpriority="high" />
+          ) : (
+            <svg class="w-48 h-48 text-[#00529B]/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+            </svg>
+          )}
+        </div>
+
+        <!-- Info -->
+        <div>
+          <div class="flex flex-wrap items-center gap-2 mb-4">
+            <span class="inline-block px-3 py-1 bg-orange-50 text-[#C2410C] text-sm font-semibold rounded-full uppercase tracking-wide">
+              {product.category}
+            </span>
+            {product.curated && (
+              <span class="inline-block px-3 py-1 bg-blue-50 text-[#00529B] text-sm font-semibold rounded-full">
+                Popular choice
+              </span>
+            )}
+          </div>
+          <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight">{product.name}</h1>
+
+          <div class="mb-5 flex flex-wrap items-center gap-3">
+            {product.sku && (
+              <span class="inline-flex items-center gap-2">
+                <span class="text-sm text-gray-500">SKU {product.sku}</span>
+                <button type="button" data-copy={product.sku} class="text-xs font-semibold text-[#00529B] hover:underline" aria-label={`Copy SKU ${product.sku}`}>Copy</button>
+              </span>
+            )}
+            <span class="text-sm text-gray-400" aria-live="polite"><span id="page-views" class="inline-block min-w-[2ch] animate-pulse text-gray-300">--</span> views</span>
+          </div>
+
+          <p class="text-lg text-gray-700 mb-6 leading-relaxed">{product.description}</p>
+
+          <div class="bg-blue-50 border border-blue-100 rounded-2xl p-6 mb-6">
+            <h2 class="text-lg font-bold text-[#00529B] mb-2">Buy from an Authorized Reseller</h2>
+            <p class="text-gray-700 mb-4 text-sm">
+              Davis Instruments products are sold through authorized resellers who provide local pricing, delivery, warranty support and installation.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-3">
+              <a href="/resellers/" class="inline-flex items-center justify-center bg-[#00529B] hover:bg-[#003d73] text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                Find a Reseller
+                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
+              <a href="/guide/" class="inline-flex items-center justify-center bg-white hover:bg-blue-50 text-[#00529B] border-2 border-[#00529B] px-6 py-3 rounded-lg font-semibold transition-colors">
+                Build a System
+              </a>
+            </div>
+          </div>
+
+          {product.davisUrl && (
+            <a href={product.davisUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-sm text-gray-500 hover:text-[#00529B] transition-colors">
+              <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+              Official specifications on Davis Instruments
+            </a>
+          )}
+        </div>
+      </div>
+
+      <!-- Features (curated products) -->
+      {product.features.length > 0 && (
+        <section class="bg-white border border-gray-200 rounded-2xl p-8 md:p-10 mb-10 shadow-sm">
+          <h2 class="text-2xl font-bold mb-6">Key Features</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {product.features.map((feature) => (
+              <div class="flex items-start p-4 bg-gray-50 rounded-lg">
+                <svg class="w-6 h-6 text-green-500 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                <span class="text-gray-700 font-medium">{feature}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <!-- Related products -->
+      {related.length > 0 && (
+        <section class="mb-10">
+          <div class="flex items-center justify-between mb-5">
+            <h2 class="text-2xl font-bold">More in {product.category}</h2>
+            <a href="/products/" class="text-sm font-semibold text-[#00529B] hover:underline">View all</a>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {related.map((item) => (
+              <a href={`/products/${item.slug}/`} class="bg-white border-2 border-gray-100 rounded-2xl overflow-hidden hover:shadow-lg hover:border-[#00529B]/40 transition-all group">
+                <div class="h-36 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center overflow-hidden">
+                  {item.image ? (
+                    <img src={item.image} srcset={`${item.image.replace('.webp', '-400.webp')} 400w, ${item.image} 900w`} sizes="(min-width: 1024px) 250px, 45vw" alt={item.name} class="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300" loading="lazy" decoding="async" />
+                  ) : (
+                    <svg class="w-12 h-12 text-[#00529B]/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                    </svg>
+                  )}
+                </div>
+                <div class="p-4">
+                  <h3 class="text-sm font-bold text-gray-900 line-clamp-2 group-hover:text-[#00529B] transition-colors">{item.name}</h3>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <!-- Back -->
+      <a href="/products/" class="inline-flex items-center text-[#00529B] hover:text-[#003d73] font-semibold">
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back to All Products
+      </a>
+    </div>
+  </section>
+
+  <script>
+    const productViewsEl = document.getElementById('page-views');
+    const renderProductViews = (views) => {
+      if (!productViewsEl) return;
+      productViewsEl.classList.remove('animate-pulse', 'text-gray-300');
+      productViewsEl.classList.add('text-gray-600');
+      productViewsEl.textContent = Number(views).toLocaleString('en-US');
+    };
+    if (typeof window.__pageViews === 'number') renderProductViews(window.__pageViews);
+    window.addEventListener('dws:page-views', (event) => renderProductViews(event.detail.views));
+  </script>
+</Layout>

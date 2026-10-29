@@ -1,0 +1,49 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Page Not Found" description="The page you are looking for could not be found. Search the site or browse resellers, products, and the buying guide.">
+  <section class="py-20 bg-gradient-to-b from-slate-50 to-white min-h-[60vh]">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div class="text-7xl mb-6" aria-hidden="true">🌦️</div>
+      <p class="text-sm font-bold uppercase tracking-widest text-[#C2410C] mb-3">404</p>
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">This page drifted away</h1>
+      <p class="text-lg text-gray-600 mb-8">
+        The page you are looking for may have moved, been renamed, or never existed.
+        Try a search, or start from one of the links below.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-3 justify-center mb-10">
+        <button type="button" data-search-open class="px-6 py-3 rounded-lg bg-[#00529B] hover:bg-[#003d73] text-white font-semibold transition-colors">
+          Search the site
+        </button>
+        <a href="/" class="px-6 py-3 rounded-lg bg-white border-2 border-gray-200 hover:border-[#00529B] text-gray-800 font-semibold transition-colors">
+          Go to homepage
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+        <a href="/resellers/" class="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-lg hover:border-[#00529B]/40 transition-all group">
+          <h2 class="font-bold text-gray-900 group-hover:text-[#00529B] transition-colors">Find a Reseller</h2>
+          <p class="text-sm text-gray-500 mt-1">Browse authorized Davis Instruments dealers by country.</p>
+        </a>
+        <a href="/products/" class="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-lg hover:border-[#00529B]/40 transition-all group">
+          <h2 class="font-bold text-gray-900 group-hover:text-[#00529B] transition-colors">Product Catalog</h2>
+          <p class="text-sm text-gray-500 mt-1">Explore weather stations, sensors, and accessories.</p>
+        </a>
+        <a href="/guide/" class="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-lg hover:border-[#00529B]/40 transition-all group">
+          <h2 class="font-bold text-gray-900 group-hover:text-[#00529B] transition-colors">Smart Buying Guide</h2>
+          <p class="text-sm text-gray-500 mt-1">Build the right configuration in seven questions.</p>
+        </a>
+        <a href="/faq/" class="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-lg hover:border-[#00529B]/40 transition-all group">
+          <h2 class="font-bold text-gray-900 group-hover:text-[#00529B] transition-colors">FAQ</h2>
+          <p class="text-sm text-gray-500 mt-1">Answers about products, installation, and support.</p>
+        </a>
+      </div>
+
+      <p class="text-sm text-gray-500 mt-8">
+        Still stuck? <a href="/contact/" class="text-[#00529B] font-semibold hover:underline">Contact us</a>.
+      </p>
+    </div>
+  </section>
+</Layout>

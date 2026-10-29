@@ -1,0 +1,766 @@
+---
+import { asset } from '../data/assets';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "Find authorized Davis Instruments resellers worldwide and explore Davis weather station products." } = Astro.props;
+
+const site = 'https://davisweatherstation.com';
+const path = Astro.url.pathname === '/' ? '/' : `${Astro.url.pathname.replace(/\/+$/, '')}/`;
+const canonical = new URL(path, site).toString();
+const rawTitle = title.trim();
+const baseTitle = rawTitle.length > 65 ? `${rawTitle.slice(0, 62).replace(/\s+\S*$/, '')}…` : rawTitle;
+const fullTitle =
+  baseTitle.toLowerCase().includes('davis weather station') || baseTitle.length > 45
+    ? baseTitle
+    : `${baseTitle} | Davis Weather Station`;
+const metaDescription =
+  description.length > 158 ? `${description.slice(0, 155).replace(/\s+\S*$/, '')}…` : description;
+const assetBase = ((import.meta as any).env?.PUBLIC_ASSET_BASE as string) || '';
+const ogImage = new URL(asset('/images/og-image.png'), site).toString();
+const googleVerification = ((import.meta as any).env?.PUBLIC_GOOGLE_SITE_VERIFICATION as string) || '';
+const siteUpdated = 'October 29, 2026';
+
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': `${site}/#organization`,
+  name: 'Davis Weather Station',
+  url: site,
+  logo: new URL(asset('/favicon.svg'), site).toString(),
+  description:
+    'An independent directory of authorized Davis Instruments resellers, with a product catalog, smart buying guide, and FAQ.',
+};
+
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': `${site}/#website`,
+  url: site,
+  name: 'Davis Weather Station',
+  description: 'Find authorized Davis Instruments resellers worldwide and explore Davis weather station products.',
+  publisher: { '@id': `${site}/#organization` },
+  inLanguage: 'en',
+};
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href={asset('/favicon.svg')} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="en" href={canonical} />
+    <link rel="alternate" hreflang="x-default" href={canonical} />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="theme-color" content="#00529B" />
+    <meta name="color-scheme" content="light dark" />
+    <script is:inline>
+      (function () {
+        try {
+          var saved = localStorage.getItem('dws-theme');
+          if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <title>{fullTitle}</title>
+    <meta name="description" content={metaDescription} />
+    {googleVerification && <meta name="google-site-verification" content={googleVerification} />}
+
+    {assetBase && <link rel="preconnect" href={assetBase} crossorigin />}
+    {assetBase && <link rel="dns-prefetch" href={assetBase} />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Davis Weather Station" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={metaDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Davis Weather Station — authorized resellers, product catalog, and buying guide" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={metaDescription} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <script type="application/ld+json" set:html={JSON.stringify([organizationSchema, websiteSchema])} />
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
+    <div id="scroll-progress" class="fixed top-0 left-0 h-1 bg-gradient-to-r from-[#00529B] to-[#C2410C] z-[90] transition-[width] duration-150 no-print" style="width: 0%"></div>
+
+    <header class="border-b border-gray-200 bg-white/95 backdrop-blur sticky top-0 z-50">
+      <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center">
+            <a href="/" class="flex items-center space-x-2">
+              <span class="text-xl font-bold text-[#00529B]">Davis Weather Station</span>
+            </a>
+          </div>
+          <div class="hidden md:flex items-center space-x-6">
+            <a href="/" class="text-gray-700 hover:text-[#00529B] font-medium transition-colors relative group">
+              Home
+              <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#00529B] transition-all group-hover:w-full"></span>
+            </a>
+            <a href="/guide/" class="text-gray-700 hover:text-[#00529B] font-medium transition-colors relative group">
+              Buying Guide
+              <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#00529B] transition-all group-hover:w-full"></span>
+            </a>
+            <a href="/resellers/" class="text-gray-700 hover:text-[#00529B] font-medium transition-colors relative group">
+              Resellers
+              <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#00529B] transition-all group-hover:w-full"></span>
+            </a>
+            <a href="/products/" class="text-gray-700 hover:text-[#00529B] font-medium transition-colors relative group">
+              Products
+              <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#00529B] transition-all group-hover:w-full"></span>
+            </a>
+            <a href="/faq/" class="text-gray-700 hover:text-[#00529B] font-medium transition-colors relative group">
+              FAQ
+              <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#00529B] transition-all group-hover:w-full"></span>
+            </a>
+            <a href="/about/" class="text-gray-700 hover:text-[#00529B] font-medium transition-colors relative group">
+              About
+              <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#00529B] transition-all group-hover:w-full"></span>
+            </a>
+            <a href="/contact/" class="text-gray-700 hover:text-[#00529B] font-medium transition-colors relative group">
+              Contact
+              <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#00529B] transition-all group-hover:w-full"></span>
+            </a>
+          </div>
+          <div class="flex items-center gap-1 sm:gap-2">
+            <button
+              type="button"
+              data-search-open
+              class="inline-flex items-center justify-center p-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-[#00529B] focus:outline-none focus:ring-2 focus:ring-[#00529B] transition-colors"
+              aria-label="Search the site"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              id="theme-toggle"
+              class="inline-flex items-center justify-center p-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-[#00529B] focus:outline-none focus:ring-2 focus:ring-[#00529B] transition-colors"
+              aria-label="Toggle dark mode"
+              aria-pressed="false"
+            >
+              <svg id="theme-icon-moon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+              <svg id="theme-icon-sun" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </button>
+            <button
+              id="mobile-menu-button"
+              type="button"
+              class="md:hidden inline-flex items-center justify-center p-2 rounded-lg text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#00529B]"
+              aria-controls="mobile-menu"
+              aria-expanded="false"
+              aria-label="Open navigation menu"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </nav>
+      <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 bg-white">
+        <nav class="max-w-7xl mx-auto px-4 py-4 space-y-1" aria-label="Mobile navigation">
+          <a href="/" class="block px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-[#00529B] font-medium">Home</a>
+          <a href="/guide/" class="block px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-[#00529B] font-medium">Buying Guide</a>
+          <a href="/resellers/" class="block px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-[#00529B] font-medium">Resellers</a>
+          <a href="/products/" class="block px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-[#00529B] font-medium">Products</a>
+          <a href="/faq/" class="block px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-[#00529B] font-medium">FAQ</a>
+          <a href="/about/" class="block px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-[#00529B] font-medium">About</a>
+          <a href="/contact/" class="block px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-[#00529B] font-medium">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <slot />
+    </main>
+
+    <footer class="bg-gray-900 text-white mt-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24 md:pb-12">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-x-8 gap-y-10">
+          <!-- Brand -->
+          <div class="sm:col-span-2 lg:col-span-4">
+            <a href="/" class="inline-flex items-center gap-2 mb-4">
+              <span class="text-xl font-bold text-white">Davis Weather Station</span>
+            </a>
+            <p class="text-gray-400 mb-4 max-w-sm leading-relaxed">
+              An independent directory of authorized Davis Instruments resellers, with a complete product catalog,
+              smart buying guide, and FAQ.
+            </p>
+            <p class="text-xs text-gray-400 max-w-sm leading-relaxed">
+              Not affiliated with, endorsed by, or sponsored by Davis Instruments.
+            </p>
+
+            <form id="newsletter-form" class="mt-6 max-w-sm" novalidate>
+              <label for="newsletter-email" class="block text-sm font-semibold text-white mb-2">Weather station tips &amp; updates</label>
+              <div class="flex gap-2">
+                <input id="newsletter-email" name="email" type="email" autocomplete="email" required placeholder="you@example.com" class="min-w-0 flex-1 px-3 py-2.5 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B35]" />
+                <button type="submit" class="px-4 py-2.5 rounded-lg bg-[#C2410C] hover:bg-[#9a3412] text-white text-sm font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed">Subscribe</button>
+              </div>
+              <p id="newsletter-status" class="mt-2 text-xs text-gray-400" role="status" aria-live="polite"></p>
+              <p class="mt-1 text-[10px] text-gray-400">By subscribing you agree to our <a href="/privacy/" class="text-gray-400 hover:text-white underline">Privacy Policy</a>.</p>
+            </form>
+          </div>
+
+          <!-- Explore -->
+          <div class="lg:col-span-2">
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wide mb-4">Explore</h2>
+            <ul class="space-y-2.5 text-sm">
+              <li><a href="/" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
+              <li><a href="/resellers/" class="text-gray-400 hover:text-white transition-colors">Resellers</a></li>
+              <li><a href="/products/" class="text-gray-400 hover:text-white transition-colors">Products</a></li>
+              <li><a href="/guide/" class="text-gray-400 hover:text-white transition-colors">Buying Guide</a></li>
+              <li><a href="/faq/" class="text-gray-400 hover:text-white transition-colors">FAQ</a></li>
+            </ul>
+          </div>
+
+          <!-- Company -->
+          <div class="lg:col-span-2">
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wide mb-4">Company</h2>
+            <ul class="space-y-2.5 text-sm">
+              <li><a href="/about/" class="text-gray-400 hover:text-white transition-colors">About</a></li>
+              <li><a href="/contact/" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+            </ul>
+          </div>
+
+          <!-- Legal -->
+          <div class="sm:col-span-2 lg:col-span-4">
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wide mb-4">Legal &amp; Policies</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-0">
+              <ul class="space-y-2.5 text-sm">
+                <li><a href="/terms/" class="text-gray-400 hover:text-white transition-colors">Terms &amp; Conditions</a></li>
+                <li><a href="/privacy/" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
+                <li><a href="/cookies/" class="text-gray-400 hover:text-white transition-colors">Cookie Policy</a></li>
+                <li><a href="/disclaimer/" class="text-gray-400 hover:text-white transition-colors">Disclaimer</a></li>
+                <li><a href="/returns/" class="text-gray-400 hover:text-white transition-colors">Return &amp; Refund Policy</a></li>
+                <li><a href="/shipping/" class="text-gray-400 hover:text-white transition-colors">Shipping Policy</a></li>
+              </ul>
+              <ul class="space-y-2.5 text-sm mt-2.5 sm:mt-0">
+                <li><a href="/accessibility/" class="text-gray-400 hover:text-white transition-colors">Accessibility</a></li>
+                <li><a href="/intellectual-property/" class="text-gray-400 hover:text-white transition-colors">Intellectual Property</a></li>
+                <li><a href="/acceptable-use/" class="text-gray-400 hover:text-white transition-colors">Acceptable Use</a></li>
+                <li><a href="/report-abuse/" class="text-gray-400 hover:text-white transition-colors">Report Abuse</a></li>
+                <li><a href="/do-not-sell/" class="text-gray-400 hover:text-white transition-colors">Do Not Sell or Share</a></li>
+                <li><a href="/legal-notice/" class="text-gray-400 hover:text-white transition-colors">Legal Notice</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom bar -->
+        <div class="border-t border-gray-800 mt-10 pt-7 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p class="text-sm text-gray-400 text-center sm:text-left">
+            &copy; {new Date().getFullYear()} Davis Weather Station.
+            <span class="mx-2 text-gray-600">&middot;</span>
+            <span class="text-xs text-gray-400">This page: <span data-page-views class="inline-block min-w-[2ch] animate-pulse text-gray-400">--</span> views</span>
+            <span class="mx-2 text-gray-600">&middot;</span>
+            <span class="text-xs text-gray-400">Site updated: {siteUpdated}</span>
+          </p>
+          <p class="text-xs text-black text-center sm:text-right md:pr-16">
+            Website maintained with love by <a href="https://github.com/janasco" target="_blank" rel="noopener noreferrer" class="text-black hover:text-gray-600 transition-colors">janasco</a>.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Floating actions -->
+    <div class="floating-actions fixed bottom-6 right-4 sm:right-6 z-50 flex flex-col items-end gap-3 no-print">
+      <button id="back-to-top" type="button" class="opacity-0 pointer-events-none w-11 h-11 rounded-full bg-[#00529B] hover:bg-[#003d73] text-white shadow-xl transition-all focus:outline-none focus:ring-2 focus:ring-[#00529B] focus:ring-offset-2" aria-label="Back to top">
+        <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+      </button>
+      <a href="/contact/" class="w-13 h-13 min-w-[52px] min-h-[52px] rounded-full bg-[#C2410C] hover:bg-[#9a3412] text-white shadow-xl flex items-center justify-center transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#C2410C] focus:ring-offset-2" aria-label="Contact us">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M21 12a9 9 0 11-4.35-7.65L21 3l-1.65 4.35A8.96 8.96 0 0121 12z" />
+        </svg>
+      </a>
+    </div>
+
+    <!-- Cookie banner -->
+    <div id="cookie-banner" class="hidden fixed bottom-0 inset-x-0 z-[70] bg-gray-900 text-white border-t border-gray-700 shadow-2xl no-print" role="dialog" aria-label="Cookie notice" aria-live="polite">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <p class="text-sm text-gray-300 leading-relaxed">
+          We use strictly necessary cookies for security and bot protection. Read our{' '}
+          <a href="/cookies/" class="text-blue-300 hover:text-white underline">Cookie Policy</a>.
+        </p>
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <button id="cookie-decline" type="button" class="px-4 py-2 rounded-lg border border-gray-600 text-gray-200 hover:bg-gray-800 text-sm font-semibold transition-colors">Decline</button>
+          <button id="cookie-accept" type="button" class="px-4 py-2 rounded-lg bg-white text-gray-900 hover:bg-gray-100 text-sm font-semibold transition-colors">Accept</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Site search -->
+    <div id="search-modal" class="hidden fixed inset-0 z-[80] no-print" role="dialog" aria-modal="true" aria-labelledby="search-modal-title">
+      <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-search-close></div>
+      <div class="relative mx-auto mt-16 sm:mt-24 max-w-2xl px-4">
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200">
+          <h2 id="search-modal-title" class="sr-only">Search the site</h2>
+          <div class="flex items-center gap-3 px-4 border-b border-gray-200">
+            <svg class="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input id="site-search-input" type="search" placeholder="Search products, resellers, FAQs…" class="w-full py-4 bg-transparent text-gray-900 placeholder-gray-400 focus:outline-none text-base" autocomplete="off" aria-label="Search products, resellers, and FAQs" />
+            <button type="button" data-search-close class="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100" aria-label="Close search">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div id="site-search-results" class="max-h-[60vh] overflow-y-auto p-2"></div>
+          <div class="flex items-center justify-between gap-3 px-4 py-2.5 border-t border-gray-100 text-[11px] text-gray-400">
+            <span>Enter opens the first result</span>
+            <span class="inline-flex items-center gap-1"><kbd class="px-1.5 py-0.5 bg-gray-100 rounded">Esc</kbd> to close</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirmation dialog -->
+    <dialog id="confirm-dialog" class="confirm-dialog w-[calc(100%-2rem)] max-w-md rounded-2xl border border-gray-200 bg-white p-0 shadow-2xl backdrop:bg-black/60">
+      <form method="dialog" class="p-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-2">Are you sure?</h2>
+        <p id="confirm-message" class="text-sm text-gray-600 leading-relaxed mb-6">This action cannot be undone.</p>
+        <div class="flex justify-end gap-3">
+          <button value="cancel" class="px-4 py-2.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-semibold transition-colors">Cancel</button>
+          <button value="confirm" class="px-4 py-2.5 rounded-lg bg-[#C2410C] hover:bg-[#9a3412] text-white text-sm font-semibold transition-colors">Confirm</button>
+        </div>
+      </form>
+    </dialog>
+
+  <script>
+    (function () {
+    // ---------- Mobile menu ----------
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuButton?.addEventListener('click', () => {
+      const nowHidden = mobileMenu?.classList.toggle('hidden');
+      mobileMenuButton.setAttribute('aria-expanded', String(!nowHidden));
+    });
+    mobileMenu?.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+        mobileMenuButton?.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    // ---------- Theme ----------
+    const root = document.documentElement;
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeSun = document.getElementById('theme-icon-sun');
+    const themeMoon = document.getElementById('theme-icon-moon');
+
+    function applyTheme(dark) {
+      root.classList.toggle('dark', dark);
+      try { localStorage.setItem('dws-theme', dark ? 'dark' : 'light'); } catch (e) {}
+      themeToggle?.setAttribute('aria-pressed', String(dark));
+      themeSun?.classList.toggle('hidden', !dark);
+      themeMoon?.classList.toggle('hidden', dark);
+    }
+
+    applyTheme(root.classList.contains('dark'));
+    themeToggle?.addEventListener('click', () => applyTheme(!root.classList.contains('dark')));
+
+    // ---------- Scroll progress + back to top ----------
+    const progressBar = document.getElementById('scroll-progress');
+    const backToTop = document.getElementById('back-to-top');
+
+    function updateScrollUI() {
+      const el = document.documentElement;
+      const max = el.scrollHeight - el.clientHeight;
+      const pct = max > 0 ? (el.scrollTop / max) * 100 : 0;
+      if (progressBar) {
+        progressBar.style.width = pct + '%';
+        progressBar.style.opacity = '1';
+      }
+      if (backToTop) {
+        backToTop.classList.toggle('opacity-0', el.scrollTop < 400);
+        backToTop.classList.toggle('pointer-events-none', el.scrollTop < 400);
+      }
+    }
+
+    window.addEventListener('scroll', updateScrollUI, { passive: true });
+    window.addEventListener('resize', updateScrollUI);
+    window.addEventListener('load', () => {
+      if (progressBar) {
+        progressBar.style.width = '100%';
+        setTimeout(() => {
+          progressBar.style.opacity = '0';
+          setTimeout(updateScrollUI, 250);
+        }, 500);
+      }
+      updateScrollUI();
+    });
+    backToTop?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    updateScrollUI();
+
+    // ---------- Page views ----------
+    function trackPageView() {
+      if (location.hostname !== 'davisweatherstation.com') {
+        document.querySelectorAll('[data-page-views], #page-views').forEach((el) => {
+          el.textContent = '—';
+          el.classList.remove('animate-pulse');
+        });
+        return;
+      }
+      const path = location.pathname;
+      if (path.startsWith('/api/')) return;
+      const key = 'dws-viewed:' + path;
+      let cached = null;
+      try { cached = sessionStorage.getItem(key); } catch (e) {}
+
+      const publish = (views) => {
+        const value = Number(views) || 0;
+        window.__pageViews = value;
+        document.querySelectorAll('[data-page-views]').forEach((el) => {
+          el.textContent = value.toLocaleString('en-US');
+          el.classList.remove('animate-pulse');
+        });
+        window.dispatchEvent(new CustomEvent('dws:page-views', { detail: { views: value } }));
+      };
+
+      const fallback = setTimeout(() => {
+        document.querySelectorAll('[data-page-views], #page-views').forEach((el) => {
+          if ((el.textContent || '').trim() === '--') {
+            el.textContent = '—';
+            el.classList.remove('animate-pulse');
+          }
+        });
+      }, 6000);
+
+      if (cached !== null) {
+        fetch('/api/track-visit?path=' + encodeURIComponent(path))
+          .then((r) => r.json())
+          .then((data) => {
+            if (typeof data.views === 'number') {
+              try { sessionStorage.setItem(key, String(data.views)); } catch (e) {}
+              clearTimeout(fallback);
+              publish(data.views);
+            }
+          })
+          .catch(() => {});
+      } else {
+        fetch('/api/track-visit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path }),
+        })
+          .then((r) => r.json())
+          .then((data) => {
+            if (typeof data.views === 'number') {
+              try { sessionStorage.setItem(key, String(data.views)); } catch (e) {}
+              clearTimeout(fallback);
+              publish(data.views);
+            }
+          })
+          .catch(() => {});
+      }
+    }
+
+    function schedulePageView() {
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(trackPageView, { timeout: 2000 });
+      } else {
+        setTimeout(trackPageView, 1200);
+      }
+    }
+    if (document.readyState === 'complete') schedulePageView();
+    else window.addEventListener('load', schedulePageView, { once: true });
+
+    // ---------- Cookie banner ----------
+    const cookieBanner = document.getElementById('cookie-banner');
+    const consentKey = 'dws-cookie-consent';
+    let consent = null;
+    try { consent = localStorage.getItem(consentKey); } catch (e) {}
+
+    function dismissCookies(value) {
+      try { localStorage.setItem(consentKey, value); } catch (e) {}
+      cookieBanner?.classList.add('hidden');
+      document.body.classList.remove('cookie-open');
+    }
+
+    if (!consent && cookieBanner) {
+      setTimeout(() => {
+        cookieBanner.classList.remove('hidden');
+        document.body.classList.add('cookie-open');
+      }, 500);
+    }
+    document.getElementById('cookie-accept')?.addEventListener('click', () => dismissCookies('accepted'));
+    document.getElementById('cookie-decline')?.addEventListener('click', () => dismissCookies('declined'));
+
+    // ---------- Site search ----------
+    const searchModal = document.getElementById('search-modal');
+    const searchInput = document.getElementById('site-search-input');
+    const searchResults = document.getElementById('site-search-results');
+    let searchIndex = null;
+    let searchLoading = false;
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    function searchSkeleton() {
+      if (!searchResults) return;
+      searchResults.innerHTML = '<div class="p-4 space-y-3 animate-pulse">' +
+        '<div class="h-3 bg-gray-200 rounded w-1/3"></div><div class="h-10 bg-gray-100 rounded"></div>' +
+        '<div class="h-3 bg-gray-200 rounded w-1/2"></div><div class="h-10 bg-gray-100 rounded"></div></div>';
+    }
+
+    function renderSearchResults(query) {
+      if (!searchResults) return;
+      const q = query.trim().toLowerCase();
+      if (!q) {
+        searchResults.innerHTML = `
+          <div class="p-3">
+            <p class="px-2 py-1 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Popular</p>
+            <div class="flex flex-wrap gap-2 px-2 py-2">
+              ${['Vantage Pro2','WeatherLink','Philippines','Installation','Warranty'].map((term) =>
+                `<button type="button" class="search-suggestion px-3 py-1.5 rounded-full bg-gray-100 hover:bg-blue-50 hover:text-[#00529B] text-sm text-gray-700 transition-colors" data-term="${escapeHtml(term)}">${escapeHtml(term)}</button>`
+              ).join('')}
+            </div>
+          </div>`;
+        searchResults.querySelectorAll('.search-suggestion').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            if (searchInput) {
+              searchInput.value = btn.getAttribute('data-term') || '';
+              renderSearchResults(searchInput.value);
+              searchInput.focus();
+            }
+          });
+        });
+        return;
+      }
+
+      const terms = q.split(/\s+/).filter(Boolean);
+      const matches = (searchIndex || [])
+        .map((entry) => {
+          const title = (entry.title || '').toLowerCase();
+          const description = (entry.description || '').toLowerCase();
+          const keywords = (entry.keywords || '').toLowerCase();
+          let score = 0;
+          for (const term of terms) {
+            if (title.startsWith(term)) score += 8;
+            else if (title.includes(term)) score += 5;
+            else if (keywords.includes(term)) score += 3;
+            else if (description.includes(term)) score += 1;
+            else return null;
+          }
+          return { entry, score };
+        })
+        .filter(Boolean)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 14);
+
+      if (!matches.length) {
+        searchResults.innerHTML = '<div class="p-8 text-center"><p class="text-gray-700 font-semibold">No results found</p><p class="text-sm text-gray-500 mt-1">Try a product name, country, or keyword.</p></div>';
+        return;
+      }
+
+      searchResults.innerHTML = matches.map(({ entry }) => `
+        <a href="${escapeHtml(entry.url)}" class="search-result block px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors">
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded-full bg-blue-50 text-[#00529B] text-[10px] font-bold uppercase tracking-wide">${escapeHtml(entry.type)}</span>
+            <span class="text-sm font-semibold text-gray-900 truncate">${escapeHtml(entry.title)}</span>
+          </div>
+          ${entry.description ? `<p class="text-xs text-gray-500 mt-0.5 line-clamp-1">${escapeHtml(entry.description)}</p>` : ''}
+        </a>`).join('');
+      searchResults.querySelectorAll('a').forEach((a) => a.addEventListener('click', closeSearch));
+    }
+
+    function openSearch() {
+      if (!searchModal) return;
+      searchModal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => searchInput?.focus(), 60);
+      if (searchIndex) {
+        renderSearchResults(searchInput?.value || '');
+        return;
+      }
+      searchSkeleton();
+      if (searchLoading) return;
+      searchLoading = true;
+      fetch('/search-index.json')
+        .then((r) => r.json())
+        .then((data) => {
+          searchIndex = Array.isArray(data) ? data : [];
+          renderSearchResults(searchInput?.value || '');
+        })
+        .catch(() => {
+          searchResults.innerHTML = '<div class="p-6 text-sm text-red-600">Search is temporarily unavailable. Please try again.</div>';
+        })
+        .finally(() => { searchLoading = false; });
+    }
+
+    function closeSearch() {
+      searchModal?.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('[data-search-open]').forEach((btn) => btn.addEventListener('click', openSearch));
+    document.querySelectorAll('[data-search-close]').forEach((el) => el.addEventListener('click', closeSearch));
+    searchInput?.addEventListener('input', () => renderSearchResults(searchInput.value));
+    searchInput?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const first = searchResults?.querySelector('a.search-result');
+        if (first) { e.preventDefault(); first.click(); }
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      const tag = (document.activeElement?.tagName || '').toLowerCase();
+      const typing = ['input', 'textarea', 'select'].includes(tag);
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openSearch(); }
+      else if (e.key === '/' && !typing) { e.preventDefault(); openSearch(); }
+      else if (e.key === 'Escape' && searchModal && !searchModal.classList.contains('hidden')) { closeSearch(); }
+    });
+
+    // ---------- Newsletter ----------
+    const newsletterForm = document.getElementById('newsletter-form');
+    const newsletterEmail = document.getElementById('newsletter-email');
+    const newsletterStatus = document.getElementById('newsletter-status');
+    const newsletterButton = newsletterForm?.querySelector('button[type="submit"]');
+    const newsletterKey = 'dws-newsletter-subscribed';
+
+    try {
+      const saved = localStorage.getItem(newsletterKey);
+      if (saved && newsletterStatus) {
+        newsletterStatus.textContent = `Subscribed on ${saved}.`;
+        if (newsletterEmail) newsletterEmail.value = '';
+      }
+    } catch (e) {}
+
+    newsletterForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = (newsletterEmail?.value || '').trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+        if (newsletterStatus) newsletterStatus.textContent = 'Please enter a valid email address.';
+        return;
+      }
+      if (newsletterButton) { newsletterButton.disabled = true; newsletterButton.textContent = 'Subscribing…'; }
+      try {
+        const response = await fetch('/api/newsletter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Subscription failed.');
+        const date = new Date(data.subscribedAt || Date.now()).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        try { localStorage.setItem(newsletterKey, date); } catch (e) {}
+        if (newsletterStatus) newsletterStatus.textContent = `Subscribed on ${date}.`;
+        if (newsletterEmail) newsletterEmail.value = '';
+      } catch (error) {
+        if (newsletterStatus) newsletterStatus.textContent = error instanceof Error ? error.message : 'Subscription is temporarily unavailable.';
+      } finally {
+        if (newsletterButton) { newsletterButton.disabled = false; newsletterButton.textContent = 'Subscribe'; }
+      }
+    });
+
+    // ---------- Confirmation modal ----------
+    const confirmDialog = document.getElementById('confirm-dialog');
+    const confirmMessage = document.getElementById('confirm-message');
+    let pendingConfirm = null;
+
+    document.addEventListener('click', (e) => {
+      const trigger = e.target.closest('[data-confirm]');
+      if (!trigger || trigger.dataset.confirmed === 'true') return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      pendingConfirm = trigger;
+      if (confirmMessage) confirmMessage.textContent = trigger.getAttribute('data-confirm') || 'This action cannot be undone.';
+      if (confirmDialog && typeof confirmDialog.showModal === 'function') {
+        confirmDialog.showModal();
+      } else if (confirm(trigger.getAttribute('data-confirm') || 'Are you sure?')) {
+        trigger.dataset.confirmed = 'true';
+        trigger.click();
+        delete trigger.dataset.confirmed;
+      }
+    }, true);
+
+    confirmDialog?.addEventListener('close', () => {
+      if (confirmDialog.returnValue === 'confirm' && pendingConfirm) {
+        pendingConfirm.dataset.confirmed = 'true';
+        pendingConfirm.click();
+        delete pendingConfirm.dataset.confirmed;
+      }
+      pendingConfirm = null;
+    });
+
+    // ---------- Copy to clipboard ----------
+    document.addEventListener('click', async (e) => {
+      const btn = e.target.closest('[data-copy], [data-copy-target]');
+      if (!btn) return;
+      const target = btn.getAttribute('data-copy-target');
+      const value = btn.getAttribute('data-copy') || (target ? document.querySelector(target)?.textContent : '') || '';
+      if (!value.trim()) return;
+      try {
+        await navigator.clipboard.writeText(value.trim());
+      } catch (error) {
+        const ta = document.createElement('textarea');
+        ta.value = value.trim();
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+      }
+      const original = btn.dataset.originalLabel || btn.textContent || 'Copy';
+      btn.dataset.originalLabel = original;
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = original; }, 1500);
+    });
+
+    // ---------- UTM on outbound links ----------
+    const ownHost = location.hostname;
+    function addUtm(link) {
+      try {
+        const url = new URL(link.href);
+        if (!/^https?:$/.test(url.protocol)) return;
+        if (url.hostname === ownHost || url.hostname.endsWith('.davisweatherstation.com') || url.hostname === 'davisweatherstation.com') return;
+        if (url.searchParams.has('utm_source')) return;
+        url.searchParams.set('utm_source', 'davisweatherstation');
+        url.searchParams.set('utm_medium', 'referral');
+        url.searchParams.set('utm_campaign', 'outbound');
+        url.searchParams.set('utm_content', location.pathname);
+        link.href = url.toString();
+      } catch (e) {}
+    }
+    document.querySelectorAll('a[href^="http"]').forEach(addUtm);
+
+    // ---------- Print: open FAQ/details ----------
+    let printOpened = [];
+    window.addEventListener('beforeprint', () => {
+      printOpened = [];
+      document.querySelectorAll('details:not([open])').forEach((d) => {
+        d.open = true;
+        printOpened.push(d);
+      });
+    });
+    window.addEventListener('afterprint', () => {
+      printOpened.forEach((d) => (d.open = false));
+      printOpened = [];
+    });
+    })();
+  </script>
+  </body>
+</html>

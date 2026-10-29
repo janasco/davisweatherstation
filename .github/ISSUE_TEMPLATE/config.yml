@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Visit the website
+    url: https://davisweatherstation.com
+    about: Browse resellers, products, the buying guide, and FAQs.
+  - name: Private contact form
+    url: https://davisweatherstation.com/contact
+    about: Send a message that should not be posted publicly.
+  - name: Reseller directory
+    url: https://davisweatherstation.com/resellers
+    about: Find an authorized Davis Instruments reseller in your country.

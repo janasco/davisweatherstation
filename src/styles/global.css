@@ -1,0 +1,440 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-primary: #00529B;
+    --color-accent: #FF6B35;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-white text-gray-900 antialiased;
+  }
+}
+
+@layer utilities {
+  .skeleton {
+    @apply animate-pulse bg-gray-200 rounded;
+  }
+  
+  .skeleton-shimmer {
+    background: linear-gradient(
+      90deg,
+      #e5e7eb 0%,
+      #f3f4f6 50%,
+      #e5e7eb 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+  
+  .btn-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn-shimmer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent
+    );
+    transform: translateX(-100%);
+    animation: btn-shimmer 2s infinite;
+    pointer-events: none;
+  }
+
+  @keyframes btn-shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+}
+
+@layer utilities {
+  @keyframes guide-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .guide-step-enter {
+    animation: guide-in 0.28s ease-out;
+  }
+
+  @keyframes result-in {
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.99);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .result-enter {
+    animation: result-in 0.4s ease-out;
+  }
+}
+
+/* Legal pages */
+@layer components {
+  .legal-content h2 {
+    font-size: 1.4rem;
+    line-height: 1.35;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 2rem 0 0.75rem;
+  }
+
+  .legal-content h2:first-child {
+    margin-top: 0;
+  }
+
+  .legal-content h3 {
+    font-size: 1.1rem;
+    line-height: 1.4;
+    font-weight: 650;
+    color: #111827;
+    margin: 1.5rem 0 0.5rem;
+  }
+
+  .legal-content p {
+    color: #374151;
+    line-height: 1.75;
+    margin: 0 0 1rem;
+  }
+
+  .legal-content ul,
+  .legal-content ol {
+    color: #374151;
+    line-height: 1.75;
+    margin: 0 0 1rem;
+    padding-left: 1.5rem;
+  }
+
+  .legal-content ul {
+    list-style: disc;
+  }
+
+  .legal-content ol {
+    list-style: decimal;
+  }
+
+  .legal-content li {
+    margin-bottom: 0.35rem;
+  }
+
+  .legal-content a {
+    color: #00529b;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .legal-content a:hover {
+    text-decoration: underline;
+  }
+
+  .legal-content strong {
+    color: #111827;
+    font-weight: 650;
+  }
+
+  .legal-content table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    margin: 1rem 0 1.25rem;
+  }
+
+  .legal-content th,
+  .legal-content td {
+    border-bottom: 1px solid #e5e7eb;
+    padding: 0.6rem 0.5rem;
+    text-align: left;
+    vertical-align: top;
+    line-height: 1.6;
+  }
+
+  .legal-content th {
+    background: #f8fafc;
+    font-weight: 650;
+    color: #111827;
+  }
+
+  .legal-content .legal-note {
+    background: #f8fafc;
+    border-left: 4px solid #00529b;
+    border-radius: 0.5rem;
+    padding: 1rem 1.1rem;
+    color: #475569;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    margin: 1rem 0 1.25rem;
+  }
+
+  .legal-content .legal-note.warning {
+    border-left-color: #ff6b35;
+  }
+
+  .legal-content hr {
+    border: 0;
+    border-top: 1px solid #e5e7eb;
+    margin: 2rem 0;
+  }
+}
+
+/* Reduce rendering cost for large catalog grids */
+.product-card {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 440px;
+}
+
+/* Defer rendering of off-screen directory cards */
+.reseller-card {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 280px;
+}
+
+/* ---------- Dark mode ---------- */
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background-color: #0b1220;
+  color: #e5e7eb;
+}
+
+html.dark header {
+  background-color: rgba(17, 24, 39, 0.95) !important;
+  border-color: #1f2937 !important;
+}
+
+html.dark header a,
+html.dark header button {
+  color: #e5e7eb;
+}
+
+html.dark header a:hover,
+html.dark header button:hover {
+  color: #93c5fd;
+  background-color: #1f2937 !important;
+}
+
+html.dark .bg-white,
+html.dark .bg-white\/95 {
+  background-color: #111827 !important;
+}
+
+html.dark .bg-gray-50,
+html.dark .bg-slate-50,
+html.dark .bg-gray-100 {
+  background-color: #0f172a !important;
+}
+
+html.dark .bg-blue-50,
+html.dark .bg-orange-50,
+html.dark .bg-green-50,
+html.dark .bg-red-50 {
+  background-color: #0f1b2d !important;
+}
+
+html.dark [class~="bg-gradient-to-b"] {
+  background-image: none !important;
+  background-color: #0b1220 !important;
+}
+
+html.dark .text-gray-900,
+html.dark .text-gray-800,
+html.dark .text-gray-700 {
+  color: #e5e7eb !important;
+}
+
+html.dark .text-gray-600,
+html.dark .text-gray-500,
+html.dark .text-gray-400 {
+  color: #94a3b8 !important;
+}
+
+html.dark .text-gray-300 {
+  color: #cbd5e1 !important;
+}
+
+html.dark .text-\[\#00529B\] {
+  color: #60a5fa !important;
+}
+
+html.dark .text-\[\#C2410C\] {
+  color: #fb923c !important;
+}
+
+html.dark .border-gray-100,
+html.dark .border-gray-200,
+html.dark .border-gray-300 {
+  border-color: #1f2937 !important;
+}
+
+html.dark input,
+html.dark select,
+html.dark textarea {
+  background-color: #0f172a !important;
+  color: #e5e7eb !important;
+  border-color: #334155 !important;
+}
+
+html.dark .legal-content h2,
+html.dark .legal-content h3 {
+  color: #f1f5f9;
+}
+
+html.dark .legal-content p,
+html.dark .legal-content li,
+html.dark .legal-content td {
+  color: #cbd5e1;
+}
+
+html.dark .legal-content th {
+  background: #0f172a;
+  color: #f1f5f9;
+}
+
+html.dark .legal-content .legal-note {
+  background: #0f172a;
+  color: #cbd5e1;
+}
+
+html.dark .legal-content th,
+html.dark .legal-content td {
+  border-color: #1f2937;
+}
+
+/* Keep the intentionally subtle footer credit black */
+html.dark .text-black {
+  color: #000 !important;
+}
+
+/* ---------- Accessibility helpers ---------- */
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -100px;
+  z-index: 100;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background: #00529b;
+  color: #ffffff;
+  font-weight: 600;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+button:not(:disabled) {
+  transition: filter 0.15s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+button:not(:disabled):hover {
+  filter: brightness(0.95);
+}
+
+body.cookie-open .floating-actions {
+  transform: translateY(-6.5rem);
+}
+
+@media (min-width: 768px) {
+  body.cookie-open .floating-actions {
+    transform: translateY(-4.5rem);
+  }
+}
+
+/* ---------- Print ---------- */
+@media print {
+  header,
+  footer,
+  .no-print,
+  .floating-actions,
+  #cookie-banner,
+  #search-modal,
+  #confirm-dialog,
+  #scroll-progress,
+  .skip-link {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  main {
+    display: block !important;
+  }
+
+  a {
+    color: #000000 !important;
+    text-decoration: underline !important;
+  }
+
+  .bg-white,
+  .bg-gray-50,
+  .bg-slate-50,
+  .bg-blue-50,
+  .bg-orange-50 {
+    background: #ffffff !important;
+  }
+
+  .text-gray-900,
+  .text-gray-800,
+  .text-gray-700,
+  .text-gray-600,
+  .text-gray-500 {
+    color: #000000 !important;
+  }
+
+  section,
+  article,
+  .legal-content table,
+  details {
+    break-inside: avoid;
+  }
+
+  .product-card,
+  .reseller-card {
+    content-visibility: visible !important;
+  }
+
+  button {
+    display: none !important;
+  }
+}

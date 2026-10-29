@@ -1,0 +1,263 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { allProducts, allProductCategories } from '../../data/allProducts';
+
+const categoryCounts = allProductCategories.map((category) => ({
+  category,
+  count: allProducts.filter((p) => p.category === category).length,
+}));
+
+const itemListSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Davis Instruments Products',
+  numberOfItems: allProducts.length,
+  itemListElement: allProducts.map((product, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: product.name,
+    url: `https://davisweatherstation.com/products/${product.slug}/`,
+  })),
+};
+
+---
+
+<Layout title="Davis Instruments Products & Accessories" description="Explore the complete Davis Instruments catalog: weather stations, sensors, data loggers, mounting hardware, and replacement parts.">
+  <script type="application/ld+json" set:html={JSON.stringify(itemListSchema)} />
+
+  <!-- Hero -->
+  <section class="relative bg-gradient-to-br from-[#00529B] via-[#003d73] to-[#001f3f] text-white overflow-hidden">
+    <div class="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -mr-48 -mt-48"></div>
+    <div class="absolute bottom-0 left-0 w-72 h-72 bg-[#C2410C]/10 rounded-full -ml-36 -mb-36"></div>
+    <div class="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-16 text-center">
+      <div class="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur border border-white/20 rounded-full text-sm font-semibold mb-5">
+        <svg class="w-4 h-4 mr-2 text-[#C2410C]" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3z" />
+        </svg>
+        {allProducts.length} products catalogued
+      </div>
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">Davis Weather Products</h1>
+      <p class="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto mb-8">
+        Every current Davis Instruments weather product — stations, sensors, connectivity, mounting and spares.
+      </p>
+      <div class="relative max-w-2xl mx-auto">
+        <svg class="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input
+          id="product-search" aria-label="Search products by name or SKU"
+          type="search"
+          placeholder="Search products, SKU, e.g. “WeatherLink”, “6420”, “repeater”…"
+          class="w-full pl-14 pr-5 py-4 rounded-2xl text-gray-900 bg-white shadow-2xl border-2 border-white/50 focus:outline-none focus:ring-4 focus:ring-[#FF6B35]/40 text-base"
+          autocomplete="off"
+        />
+      </div>
+    </div>
+  </section>
+
+  <section class="py-10 bg-gradient-to-b from-slate-50 to-white min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Category chips -->
+      <div class="mb-6 flex flex-wrap gap-2 justify-center" id="product-filters">
+        <button class="product-filter active px-4 py-2 rounded-full text-sm font-semibold bg-[#00529B] text-white shadow-md transition-all" data-category="all">
+          All ({allProducts.length})
+        </button>
+        {categoryCounts.map(({ category, count }) => (
+          <button class="product-filter px-4 py-2 rounded-full text-sm font-semibold bg-white text-gray-700 border-2 border-gray-200 hover:border-[#00529B]/50 hover:text-[#00529B] shadow-sm transition-all" data-category={category}>
+            {category} ({count})
+          </button>
+        ))}
+      </div>
+
+      <!-- Sort + count -->
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-8 px-1">
+        <p class="text-sm text-gray-600">
+          Showing <span id="product-visible-count" class="font-semibold text-[#00529B]">{allProducts.length}</span> of {allProducts.length} products
+        </p>
+        <div class="flex items-center gap-2">
+          <label for="product-sort" class="text-sm text-gray-600">Sort</label>
+          <select id="product-sort" class="px-3 py-2 text-sm border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00529B] bg-white">
+            <option value="featured">Featured</option>
+            <option value="name">Name: A–Z</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Products -->
+      <h2 class="text-2xl font-bold mb-4">Product Catalog</h2>
+      <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {allProducts.map((product) => (
+          <article
+            class="product-card bg-white rounded-2xl overflow-hidden border-2 border-gray-100 shadow-sm hover:shadow-xl hover:border-[#00529B]/40 transition-all group flex flex-col"
+            data-category={product.category}
+            data-name={product.name.toLowerCase()}
+            data-sku={(product.sku || '').toLowerCase()}
+            data-featured={product.curated ? '1' : '0'}
+          >
+            <a href={`/products/${product.slug}/`} class="block h-48 bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden relative">
+              {product.image ? (
+                <img
+                  src={product.image}
+                  srcset={`${product.image.replace('.webp', '-400.webp')} 400w, ${product.image} 900w`}
+                  sizes="(min-width: 1280px) 300px, (min-width: 768px) 45vw, 92vw"
+                  alt={product.name}
+                  class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+                  loading="lazy" decoding="async"
+                />
+              ) : (
+                <div class="w-full h-full flex items-center justify-center">
+                  <svg class="w-16 h-16 text-[#00529B]/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                  </svg>
+                </div>
+              )}
+              <span class="absolute top-3 left-3 px-2.5 py-1 bg-white/95 backdrop-blur text-[#C2410C] text-[10px] font-bold rounded-full uppercase tracking-wide shadow-sm">
+                {product.category}
+              </span>
+            </a>
+            <div class="p-5 flex flex-col flex-1">
+              <h3 class="text-base font-bold text-gray-900 mb-1.5 leading-snug group-hover:text-[#00529B] transition-colors line-clamp-2">
+                {product.name}
+              </h3>
+              <p class="text-sm text-gray-500 line-clamp-2 mb-3 flex-1">{product.description}</p>
+              <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+                <span class="text-xs font-medium text-gray-500">{product.sku ? `SKU ${product.sku}` : product.category}</span>
+                <a href={`/products/${product.slug}/`} class="inline-flex items-center text-[#C2410C] hover:text-[#9a3412] font-semibold text-sm">
+                  Details
+                  <svg class="w-4 h-4 ml-1 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <!-- Load more -->
+      <div class="text-center mt-10">
+        <button id="load-more" class="hidden px-8 py-3 bg-white border-2 border-[#00529B] text-[#00529B] hover:bg-[#00529B] hover:text-white rounded-xl font-semibold transition-all shadow-md hover:shadow-lg">
+          Load more products
+        </button>
+      </div>
+
+      <!-- No results -->
+      <div id="product-no-results" class="hidden text-center py-16">
+        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        <p class="text-lg font-semibold text-gray-700 mb-1">No products matched your search</p>
+        <p class="text-gray-500 text-sm mb-5">Try a product name, SKU, or category.</p>
+        <a href="/contact/" class="inline-flex items-center px-5 py-2.5 bg-[#00529B] hover:bg-[#003d73] text-white rounded-lg font-semibold text-sm transition-colors">
+          Ask about a product
+        </a>
+      </div>
+
+      <!-- CTA -->
+      <div class="mt-16 bg-gradient-to-r from-[#00529B] to-[#003d73] rounded-3xl p-8 md:p-12 text-center text-white shadow-xl">
+        <h2 class="text-2xl md:text-3xl font-bold mb-3">Not sure which product you need?</h2>
+        <p class="text-blue-100 mb-7 max-w-2xl mx-auto">
+          Answer a few questions and we'll recommend a complete configuration, or contact an authorized reseller for advice.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <a href="/guide/" class="btn-shimmer px-6 py-3 bg-[#C2410C] hover:bg-[#9a3412] rounded-xl font-semibold transition-all shadow-lg">
+            Smart Buying Guide
+          </a>
+          <a href="/resellers/" class="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/30 rounded-xl font-semibold transition-all">
+            Find a Reseller
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const PAGE_SIZE = 24;
+    const searchInput = document.getElementById('product-search') as HTMLInputElement | null;
+    const sortSelect = document.getElementById('product-sort') as HTMLSelectElement | null;
+    const filters = Array.from(document.querySelectorAll('.product-filter')) as HTMLElement[];
+    const grid = document.getElementById('product-grid');
+    const cards = Array.from(document.querySelectorAll('.product-card')) as HTMLElement[];
+    const visibleCount = document.getElementById('product-visible-count');
+    const noResults = document.getElementById('product-no-results');
+    const loadMore = document.getElementById('load-more');
+
+    let activeCategory = 'all';
+    let query = '';
+    let sort = 'featured';
+    let shown = PAGE_SIZE;
+
+    const matches = (card: HTMLElement) => {
+      const category = card.dataset.category || '';
+      const name = card.dataset.name || '';
+      const sku = card.dataset.sku || '';
+      const categoryOk = activeCategory === 'all' || category === activeCategory;
+      const queryOk = !query || name.includes(query) || sku.includes(query);
+      return categoryOk && queryOk;
+    };
+
+    const sorted = () => {
+      const visible = cards.filter(matches);
+      if (sort === 'name') visible.sort((a, b) => (a.dataset.name || '').localeCompare(b.dataset.name || ''));
+      else visible.sort((a, b) => Number(b.dataset.featured) - Number(a.dataset.featured));
+      return visible;
+    };
+
+    function render() {
+      const visible = sorted();
+      cards.forEach((card) => (card.style.display = 'none'));
+
+      visible.slice(0, shown).forEach((card) => {
+        card.style.display = 'flex';
+        grid?.appendChild(card);
+      });
+
+      if (visibleCount) visibleCount.textContent = String(visible.length);
+      noResults?.classList.toggle('hidden', visible.length !== 0);
+      loadMore?.classList.toggle('hidden', visible.length <= shown);
+      if (loadMore) {
+        const remaining = Math.max(visible.length - shown, 0);
+        loadMore.textContent = `Load more products (${remaining} remaining)`;
+      }
+    }
+
+    let searchDebounce;
+    searchInput?.addEventListener('input', () => {
+      clearTimeout(searchDebounce);
+      searchDebounce = setTimeout(() => {
+        query = (searchInput.value || '').trim().toLowerCase();
+        shown = PAGE_SIZE;
+        render();
+      }, 200);
+    });
+
+    filters.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        activeCategory = btn.dataset.category || 'all';
+        shown = PAGE_SIZE;
+        filters.forEach((b) => {
+          b.classList.remove('active', 'bg-[#00529B]', 'text-white', 'shadow-md');
+          b.classList.add('bg-white', 'text-gray-700', 'border-2', 'border-gray-200', 'shadow-sm');
+        });
+        btn.classList.add('active', 'bg-[#00529B]', 'text-white', 'shadow-md');
+        btn.classList.remove('bg-white', 'text-gray-700', 'border-gray-200', 'shadow-sm');
+        render();
+      });
+    });
+
+    sortSelect?.addEventListener('change', () => {
+      sort = sortSelect.value;
+      shown = PAGE_SIZE;
+      render();
+    });
+
+    loadMore?.addEventListener('click', () => {
+      shown += PAGE_SIZE;
+      render();
+    });
+
+    render();
+  </script>
+</Layout>
