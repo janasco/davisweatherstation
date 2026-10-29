@@ -12,7 +12,7 @@ const env = loadEnv(process.env.NODE_ENV || 'production', process.cwd(), '');
 // https://astro.build/config
 export default defineConfig({
   site: 'https://davisweatherstation.com',
-  integrations: [sitemap({ filter: (page) => !page.includes('/api/') })],
+  integrations: [sitemap({ filter: (page) => !page.includes('/api/') && !page.includes('/admin/') })],
 
   build: {
     assetsPrefix: env.PUBLIC_ASSET_BASE || undefined,
