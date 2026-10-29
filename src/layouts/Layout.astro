@@ -5,9 +5,10 @@ import '../styles/global.css';
 interface Props {
   title: string;
   description?: string;
+  noTrack?: boolean;
 }
 
-const { title, description = "Find authorized Davis Instruments resellers worldwide and explore Davis weather station products." } = Astro.props;
+const { title, description = "Find authorized Davis Instruments resellers worldwide and explore Davis weather station products.", noTrack = false } = Astro.props;
 
 const site = 'https://davisweatherstation.com';
 const path = Astro.url.pathname === '/' ? '/' : `${Astro.url.pathname.replace(/\/+$/, '')}/`;
@@ -49,7 +50,7 @@ const websiteSchema = {
 ---
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-page-views={noTrack ? 'off' : undefined}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -417,6 +418,13 @@ const websiteSchema = {
 
     // ---------- Page views ----------
     function trackPageView() {
+      if (document.documentElement.dataset.pageViews === 'off') {
+        document.querySelectorAll('[data-page-views], #page-views').forEach((el) => {
+          el.textContent = '—';
+          el.classList.remove('animate-pulse');
+        });
+        return;
+      }
       if (location.hostname !== 'davisweatherstation.com') {
         document.querySelectorAll('[data-page-views], #page-views').forEach((el) => {
           el.textContent = '—';
