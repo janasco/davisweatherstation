@@ -2,12 +2,14 @@ import type { APIRoute } from 'astro';
 import { allProducts } from '../data/allProducts';
 import { resellers } from '../data/resellers';
 import { faqs } from '../data/faqs';
+import { countryPages } from '../utils/countries';
 
 export const prerender = true;
 
 const pages = [
   { type: 'Page', title: 'Home', url: '/', description: 'Find authorized Davis Instruments resellers worldwide.' },
   { type: 'Page', title: 'Resellers', url: '/resellers/', description: 'Browse authorized Davis Instruments resellers by country.' },
+  { type: 'Page', title: 'Resellers by Country', url: '/resellers/countries/', description: 'Browse Davis Instruments resellers by country.' },
   { type: 'Page', title: 'Products', url: '/products/', description: 'Explore the complete Davis Instruments product catalog.' },
   { type: 'Page', title: 'Smart Buying Guide', url: '/guide/', description: 'Build a recommended Davis weather station configuration.' },
   { type: 'Page', title: 'Frequently Asked Questions', url: '/faq/', description: 'Answers about products, installation, WeatherLink, and support.' },
@@ -29,6 +31,13 @@ const pages = [
 
 const entries = [
   ...pages,
+  ...countryPages.map((country) => ({
+    type: 'Page',
+    title: `Davis Resellers in ${country.name}`,
+    url: `/resellers/country/${country.slug}/`,
+    description: `${country.count} authorized Davis Instruments ${country.count === 1 ? 'reseller' : 'resellers'} in ${country.name}.`,
+    keywords: country.name,
+  })),
   ...allProducts.map((product) => ({
     type: 'Product',
     title: product.name,
