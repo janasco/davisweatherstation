@@ -19,9 +19,6 @@ const resellerIndex = resellers
     country: r.country,
     city: r.city || '',
   }));
-
-const botProtectionSiteKey = ((import.meta as any).env?.PUBLIC_BOT_PROTECTION_SITE_KEY as string) || '';
-const botProtectionScriptUrl = ((import.meta as any).env?.PUBLIC_BOT_PROTECTION_SCRIPT_URL as string) || '';
 ---
 
 <Layout title="Smart Buying Guide" description="Answer seven simple questions and get a tailored Davis Instruments weather station configuration with real products and a ready-to-send quote request.">
@@ -159,20 +156,17 @@ const botProtectionScriptUrl = ((import.meta as any).env?.PUBLIC_BOT_PROTECTION_
                 </div>
                 <div class="space-y-3 mb-10" id="recommendations"></div>
 
-                <!-- Compare -->
+                <!-- Similar generated setups -->
                 <div class="mb-10">
-                  <h3 class="text-2xl font-bold mb-1">Compare Other Setups</h3>
-                  <p class="text-gray-500 mb-5 text-sm">Three proven configurations — pick the one that fits your site and budget.</p>
-                  <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="compare-cards"></div>
+                  <h3 class="text-2xl font-bold mb-1">Similar Setups</h3>
+                  <p class="text-gray-500 mb-5 text-sm">Closest matches from <span id="scenario-count">96</span> generated configurations. Pick one to load it into the guide.</p>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="similar-cards"></div>
                 </div>
 
                 <!-- Quote -->
                 <div class="bg-gradient-to-br from-blue-50 to-white border-2 border-blue-100 rounded-2xl p-7">
                   <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
                     <h3 class="text-2xl font-bold text-[#00529B]">Get Your Quote</h3>
-                    <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-green-700 bg-green-50 px-2.5 py-1 rounded-full">
-                      <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Bot protected
-                    </span>
                   </div>
                   <p class="text-gray-700 mb-5 text-sm">Choose your country and reseller, add your details, and send the message directly. It already lists your exact build and SKUs.</p>
 
@@ -215,10 +209,6 @@ const botProtectionScriptUrl = ((import.meta as any).env?.PUBLIC_BOT_PROTECTION_
 
                   <input id="quote-website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" class="hidden" />
 
-                  <div class="mb-4">
-                    <div id="bot-protection-container"></div>
-                  </div>
-
                   <div id="quote-status" class="hidden mb-4 rounded-xl border-2 px-4 py-3 text-sm font-medium"></div>
 
                   <p class="text-xs text-gray-500 mb-4">
@@ -255,7 +245,7 @@ const botProtectionScriptUrl = ((import.meta as any).env?.PUBLIC_BOT_PROTECTION_
     </div>
   </section>
 
-  <script define:vars={{ productIndex, resellerIndex, botProtectionSiteKey, botProtectionScriptUrl }}>
+  <script define:vars={{ productIndex, resellerIndex }}>
     const steps = [
       {
         key: 'use',
@@ -364,7 +354,7 @@ const botProtectionScriptUrl = ((import.meta as any).env?.PUBLIC_BOT_PROTECTION_
     const resultSubtitle = document.getElementById('result-subtitle');
     const resultChips = document.getElementById('result-chips');
     const resultDate = document.getElementById('result-date');
-    const compareCards = document.getElementById('compare-cards');
+    const similarCards = document.getElementById('similar-cards');
     const countrySelect = document.getElementById('country-select');
     const resellerSelect = document.getElementById('reseller-select');
     const senderName = document.getElementById('sender-name');
@@ -372,7 +362,6 @@ const botProtectionScriptUrl = ((import.meta as any).env?.PUBLIC_BOT_PROTECTION_
     const subjectInput = document.getElementById('quote-subject');
     const emailMessage = document.getElementById('email-message');
     const honeypot = document.getElementById('quote-website');
-    const botProtectionContainer = document.getElementById('bot-protection-container');
     const quoteStatus = document.getElementById('quote-status');
     const sendBtn = document.getElementById('send-quote');
     const copyBtn = document.getElementById('copy-message');
@@ -557,55 +546,58 @@ const botProtectionScriptUrl = ((import.meta as any).env?.PUBLIC_BOT_PROTECTION_
     });
 
     // ---------------- Recommendation logic ----------------
-    function buildRecs() {
+    function buildRecs(input = answers) {
       const items = [];
       const add = (slug, tier, reason) => {
         if (!slug || !product(slug) || items.some((i) => i.slug === slug)) return;
         items.push({ slug, tier, reason });
       };
 
-      const offGrid = answers.power === 'no_power';
-      const enterprise = answers.coverage !== 'single_site' || offGrid;
-      const wantsSoil = answers.sensors === 'agriculture' || answers.sensors === 'complete' || answers.use === 'agriculture';
-      const wantsRadiation = answers.sensors === 'uv_solar' || answers.sensors === 'complete' || answers.use === 'research';
+      const offGrid = input.power === 'no_power';
+      const enterprise = input.coverage !== 'single_site' || offGrid;
+      const wantsSoil = input.sensors === 'agriculture' || input.sensors === 'complete' || input.use === 'agriculture';
+      const wantsRadiation = input.sensors === 'uv_solar' || input.sensors === 'complete' || input.use === 'research';
 
       if (enterprise) {
         add('enviromonitor', 'essential', 'Solar-powered monitoring platform for remote or multi-site coverage');
         add('enviromonitor-node', 'essential', 'Connects your sensors in the field over long-range wireless');
-        if (answers.connectivity === 'yes_cellular' || offGrid) {
+        if (input.connectivity === 'yes_cellular' || offGrid) {
           add('enviromonitor', 'essential', 'LTE gateway uploads data without Wi-Fi or mains power');
         } else {
           add('enviromonitor-ip-gateway-wi-fi-ethernet', 'essential', 'Wi-Fi/Ethernet gateway for WeatherLink cloud upload');
         }
-        if (answers.coverage === 'large_area') {
+        if (input.coverage === 'large_area') {
           add('enviromonitor-long-range-antenna-8dbi', 'recommended', 'Boosts gateway range across a large property');
         }
       } else {
-        if (answers.use === 'home') {
-          if (answers.sensors === 'basic') {
+        if (input.use === 'home') {
+          if (input.sensors === 'basic') {
             add('vantage-vue', 'essential', 'All-in-one station — simplest install and best value for a home');
           } else {
             add('vantage-pro2', 'essential', 'Expandable professional station ready for the sensors you chose');
           }
-        } else if (answers.use === 'education') {
+        } else if (input.use === 'education') {
           add('vantage-vue', 'essential', 'Easy-to-install station with everything a classroom needs');
-        } else if (answers.use === 'agriculture') {
+        } else if (input.use === 'agriculture') {
           add('vantage-pro2-plus', 'essential', 'Pro station with ET and radiation data for crop decisions');
         } else {
           add('vantage-pro2-plus', 'essential', 'Research-grade station with UV and solar radiation');
         }
 
-        if (answers.connectivity === 'yes_wifi') {
+        if (input.connectivity === 'yes_wifi') {
           add('weatherlink-live', 'essential', 'Wi-Fi/Ethernet upload to WeatherLink.com and the mobile app');
           add('weatherlink-console', 'recommended', 'Optional local touchscreen display for the same data');
-        } else if (answers.connectivity === 'no_upload') {
+        } else if (input.connectivity === 'no_upload') {
           add('weatherlink-console', 'essential', 'Local color display and data storage — no cloud required');
-        } else {
+        } else if (enterprise) {
           add('enviromonitor', 'essential', 'LTE gateway for sites without Wi-Fi — pairs with EnviroMonitor nodes');
           add('enviromonitor-node', 'essential', 'Connects your sensors to the LTE gateway');
+        } else {
+          add('weatherlink-live', 'essential', 'Cloud upload through a cellular router at the site (router not included)');
+          add('weatherlink-console', 'recommended', 'Optional local touchscreen display for the same data');
         }
 
-        if (answers.range === 'far') {
+        if (input.range === 'far') {
           add('wireless-long-range-repeater-with-solar-power', 'essential', 'Extends wireless range beyond the standard 1,000 ft');
         }
       }
@@ -620,29 +612,115 @@ const botProtectionScriptUrl = ((import.meta as any).env?.PUBLIC_BOT_PROTECTION_
         add('sensor-mounting-shelf-2', 'recommended', 'Mounts the UV and solar sensors on the station');
       }
 
-      if (answers.site === 'open_field' || answers.site === 'rooftop') {
+      if (input.site === 'open_field' || input.site === 'rooftop') {
         add('mounting-tripod-lag-bolts', 'recommended', 'Stable tripod for open ground or a roof platform');
-      } else if (answers.site === 'pole' || answers.site === 'building') {
+      } else if (input.site === 'pole' || input.site === 'building') {
         add('mounting-pole-kit', 'recommended', 'Pole or bracket mounting for a clean, level install');
       }
 
       return items;
     }
 
-    function systemName() {
-      if (answers.coverage !== 'single_site' || answers.power === 'no_power') return 'EnviroMonitor System';
-      if (answers.use === 'home' && answers.sensors === 'basic') return 'Vantage Vue System';
-      if (answers.use === 'education') return 'Vantage Vue System';
-      if (answers.use === 'agriculture' || answers.use === 'research') return 'Vantage Pro2 Plus System';
+    function systemName(input = answers) {
+      if (input.coverage !== 'single_site' || input.power === 'no_power') return 'EnviroMonitor System';
+      if (input.use === 'home' && input.sensors === 'basic') return 'Vantage Vue System';
+      if (input.use === 'education') return 'Vantage Vue System';
+      if (input.use === 'agriculture' || input.use === 'research') return 'Vantage Pro2 Plus System';
       return 'Vantage Pro2 System';
     }
 
-    function compareConfigs() {
-      return [
-        { title: 'Home & Backyard', subtitle: 'Best value', slugs: ['vantage-vue', 'weatherlink-live'], note: 'All-in-one station with app access.' },
-        { title: 'Professional', subtitle: 'Farms & research', slugs: ['vantage-pro2-plus', 'weatherlink-console', 'soil-moisture-station', 'leaf-wetness-sensor'], note: 'ET, soil and leaf wetness for agronomy.' },
-        { title: 'Enterprise', subtitle: 'Multi-site', slugs: ['enviromonitor', 'enviromonitor-node', 'enviromonitor-ip-gateway-wi-fi-ethernet'], note: 'Solar nodes across fields with a cloud gateway.' },
-      ];
+    const similarityWeights = { use: 6, coverage: 3, sensors: 2, connectivity: 2, power: 2, site: 1, range: 1 };
+
+    function scenarioKey(a) {
+      return ['use', 'coverage', 'sensors', 'connectivity', 'site', 'power', 'range']
+        .map((key) => a[key])
+        .join('|');
+    }
+
+    const scenarioCatalog = (() => {
+      const uses = ['home', 'agriculture', 'research', 'education'];
+      const coverages = ['single_site', 'multi_field', 'large_area'];
+      const sensorSets = ['basic', 'agriculture', 'uv_solar', 'complete'];
+      const connectivities = ['yes_wifi', 'yes_cellular'];
+      const scenarios = [];
+
+      for (const use of uses) {
+        for (const coverage of coverages) {
+          for (const sensors of sensorSets) {
+            for (const connectivity of connectivities) {
+              const single = coverage === 'single_site';
+              const site = single
+                ? (use === 'home' || use === 'education'
+                    ? (sensors === 'basic' ? 'open_field' : 'rooftop')
+                    : 'open_field')
+                : (coverage === 'large_area' ? 'pole' : 'open_field');
+              const power = single ? 'yes_power' : 'no_power';
+              const range = single ? (use === 'research' ? 'medium' : 'close') : 'far';
+              const scenarioAnswers = { use, coverage, site, power, connectivity, sensors, range };
+              scenarios.push({ key: scenarioKey(scenarioAnswers), answers: scenarioAnswers });
+            }
+          }
+        }
+      }
+
+      return scenarios;
+    })();
+
+    document.getElementById('scenario-count').textContent = String(scenarioCatalog.length);
+
+    function scenarioDistance(a) {
+      let distance = 0;
+      for (const [key, weight] of Object.entries(similarityWeights)) {
+        if (a[key] !== answers[key]) distance += weight;
+      }
+      return distance;
+    }
+
+    function similarSetups(limit = 4) {
+      const currentKey = scenarioKey(answers);
+      const alternatives = scenarioCatalog.filter((scenario) =>
+        scenario.key !== currentKey &&
+        (scenario.answers.use !== answers.use ||
+          scenario.answers.coverage !== answers.coverage ||
+          scenario.answers.sensors !== answers.sensors ||
+          scenario.answers.connectivity !== answers.connectivity)
+      );
+      const pool = alternatives.length
+        ? alternatives
+        : scenarioCatalog.filter((scenario) => scenario.key !== currentKey);
+
+      return pool
+        .map((scenario) => ({
+          ...scenario,
+          distance: scenarioDistance(scenario.answers),
+          recs: buildRecs(scenario.answers),
+        }))
+        .sort((a, b) => a.distance - b.distance || a.answers.use.localeCompare(b.answers.use))
+        .slice(0, limit);
+    }
+
+    function scenarioTitle(a) {
+      const useNames = { home: 'Home', agriculture: 'Agriculture', research: 'Research', education: 'Education' };
+      return `${useNames[a.use] || ''} ${systemName(a).replace(' System', '')}`.trim();
+    }
+
+    function scenarioDifference(a) {
+      const differences = [];
+      if (a.use !== answers.use) differences.push(labelFor('use', a.use));
+      if (a.sensors !== answers.sensors) differences.push(`Sensors: ${labelFor('sensors', a.sensors)}`);
+      if (a.connectivity !== answers.connectivity) differences.push(labelFor('connectivity', a.connectivity));
+      if (a.range !== answers.range) differences.push(a.range === 'far' ? 'Long-range repeater' : labelFor('range', a.range));
+      return differences.slice(0, 2).join(' · ') || 'Different mounting or power';
+    }
+
+    function applyScenario(scenario) {
+      Object.keys(answers).forEach((key) => delete answers[key]);
+      Object.assign(answers, scenario.answers);
+      currentStep = steps.length - 1;
+      subjectInput.value = '';
+      renderStep();
+      showResults();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function showResults() {
@@ -687,36 +765,47 @@ const botProtectionScriptUrl = ((import.meta as any).env?.PUBLIC_BOT_PROTECTION_
         `;
       }).join('');
 
-      compareCards.innerHTML = compareConfigs().map((cfg) => {
-        const items = cfg.slugs.map(product).filter(Boolean);
+      const similar = similarSetups();
+      similarCards.innerHTML = similar.map((scenario, index) => {
+        const items = scenario.recs.map((rec) => product(rec.slug)).filter(Boolean);
         return `
-          <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 hover:shadow-lg hover:border-[#00529B]/30 transition-all">
-            <div class="flex items-center justify-between mb-1">
-              <h4 class="font-bold text-gray-900 text-sm">${cfg.title}</h4>
-              <span class="text-[10px] font-bold uppercase tracking-wide text-[#C2410C]">${cfg.subtitle}</span>
+          <button type="button" data-similar="${index}" class="text-left bg-white border-2 border-gray-100 rounded-2xl p-5 hover:shadow-lg hover:border-[#00529B]/30 transition-all">
+            <div class="flex items-center justify-between gap-3 mb-2">
+              <span class="px-2 py-0.5 bg-blue-50 text-[#00529B] text-[10px] font-bold uppercase tracking-wide rounded-full">Similar setup</span>
+              <span class="text-xs text-gray-500">${items.length} products</span>
             </div>
-            <p class="text-xs text-gray-500 mb-3">${cfg.note}</p>
-            <div class="flex -space-x-3 mb-3">
-              ${items.slice(0, 4).map((p) => `
+            <h4 class="font-bold text-gray-900">${scenarioTitle(scenario.answers)}</h4>
+            <p class="text-xs text-gray-500 mt-1">${[
+              labelFor('coverage', scenario.answers.coverage),
+              labelFor('site', scenario.answers.site),
+              labelFor('power', scenario.answers.power),
+            ].join(' · ')}</p>
+            <p class="text-xs font-semibold text-[#C2410C] mt-2">${scenarioDifference(scenario.answers)}</p>
+            <div class="flex -space-x-3 my-4">
+              ${items.slice(0, 3).map((item) => `
                 <div class="w-11 h-11 rounded-full bg-gray-50 border-2 border-white flex items-center justify-center overflow-hidden shadow-sm">
-                  ${p.image ? `<img src="${p.image}" srcset="${p.image.replace('.webp', '-400.webp')} 400w, ${p.image} 900w" sizes="48px" alt="${p.name}" class="w-full h-full object-contain p-1" loading="lazy" decoding="async" />` : '<span class="text-base">📦</span>'}
+                  ${item.image ? `<img src="${item.image}" srcset="${item.image.replace('.webp', '-400.webp')} 400w, ${item.image} 900w" sizes="48px" alt="${item.name}" class="w-full h-full object-contain p-1" loading="lazy" decoding="async" />` : '<span class="text-base">📦</span>'}
                 </div>
               `).join('')}
             </div>
-            <ul class="text-xs text-gray-600 space-y-1 mb-3">
-              ${items.map((p) => `<li class="truncate">• ${p.name}</li>`).join('')}
+            <ul class="text-xs text-gray-600 space-y-1 mb-4">
+              ${items.slice(0, 3).map((item) => `<li class="truncate">• ${item.name}</li>`).join('')}
+              ${items.length > 3 ? `<li class="text-gray-400">+ ${items.length - 3} more</li>` : ''}
             </ul>
-            <div class="flex items-center justify-between pt-3 border-t border-gray-100">
-              <span class="text-xs text-gray-500">${items.length} products</span>
-              <a href="/products/${items[0] ? items[0].slug : 'vantage-vue'}/" class="text-xs font-semibold text-[#00529B] hover:underline">View →</a>
-            </div>
-          </div>
+            <span class="inline-flex items-center text-xs font-semibold text-[#00529B]">Load this setup →</span>
+          </button>
         `;
       }).join('');
 
+      similarCards.querySelectorAll('[data-similar]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const scenario = similar[Number(button.dataset.similar)];
+          if (scenario) applyScenario(scenario);
+        });
+      });
+
       updateMessage();
       populateResellers();
-      ensureBotProtection();
     }
 
     function updateMessage() {
@@ -783,72 +872,6 @@ ${customerEmail}`;
       quoteStatus.textContent = '';
     }
 
-    let botProtectionWidgetId = null;
-    let botProtectionAttempts = 0;
-
-    function currentBotProtectionToken() {
-      const input = document.querySelector('input[name="cf-turnstile-response"]');
-      const value = (window.__botProtectionToken || (input && input.value) || '').trim();
-      if (value) window.__botProtectionToken = value;
-      return value;
-    }
-
-    function renderBotProtection() {
-      if (!window.turnstile || botProtectionWidgetId !== null) return;
-      try {
-        botProtectionWidgetId = window.turnstile.render(botProtectionContainer, {
-          sitekey: botProtectionSiteKey,
-          theme: 'light',
-          callback: (token) => { window.__botProtectionToken = token; },
-          'expired-callback': () => { window.__botProtectionToken = ''; },
-          'error-callback': () => { window.__botProtectionToken = ''; },
-        });
-      } catch (error) {
-        botProtectionWidgetId = null;
-      }
-    }
-
-    let botProtectionScriptLoading = false;
-
-    function loadBotProtectionScript() {
-      if (window.turnstile || botProtectionScriptLoading || !botProtectionScriptUrl) return;
-      botProtectionScriptLoading = true;
-      const script = document.createElement('script');
-      script.src = botProtectionScriptUrl;
-      script.async = true;
-      script.onload = () => {
-        botProtectionScriptLoading = false;
-        renderBotProtection();
-      };
-      script.onerror = () => {
-        botProtectionScriptLoading = false;
-      };
-      document.head.appendChild(script);
-    }
-
-    function ensureBotProtection() {
-      if (window.turnstile) {
-        renderBotProtection();
-        return;
-      }
-      loadBotProtectionScript();
-      botProtectionAttempts += 1;
-      if (botProtectionAttempts > 80) return;
-      setTimeout(ensureBotProtection, 250);
-    }
-
-    // Some browsers fill the hidden input without firing the callback.
-    setInterval(() => {
-      currentBotProtectionToken();
-    }, 1000);
-
-    function resetBotProtection() {
-      window.__botProtectionToken = '';
-      if (window.turnstile && botProtectionWidgetId !== null) {
-        try { window.turnstile.reset(botProtectionWidgetId); } catch (error) {}
-      }
-    }
-
     sendBtn.addEventListener('click', async () => {
       clearStatus();
       const reseller = selectedReseller();
@@ -858,8 +881,6 @@ ${customerEmail}`;
       if (subjectInput.value.trim().length < 3) return showStatus('Please enter a subject.', 'error');
       if (emailMessage.value.trim().length < 20) return showStatus('Please enter a message.', 'error');
       if (honeypot.value) return;
-      const turnstileToken = currentBotProtectionToken();
-      if (!turnstileToken) return showStatus('Please complete the bot verification.', 'error');
 
       const configuration = {
         systemName: systemName(),
@@ -890,7 +911,6 @@ ${customerEmail}`;
             country: countrySelect.value,
             resellerSlug: reseller.slug,
             configuration,
-            turnstileToken,
             website: honeypot.value,
           }),
         });
@@ -902,12 +922,10 @@ ${customerEmail}`;
           showStatus(`Message sent to ${reseller.name}. They will reply to ${senderEmail.value.trim()}.`, 'success');
         }
         sendBtn.textContent = 'Message Sent';
-        resetBotProtection();
       } catch (error) {
         showStatus(error instanceof Error ? error.message : 'Could not send your message.', 'error');
         sendBtn.disabled = false;
         sendBtn.textContent = 'Send Message';
-        resetBotProtection();
       }
     });
 
@@ -937,7 +955,6 @@ ${customerEmail}`;
       clearStatus();
       sendBtn.disabled = false;
       sendBtn.textContent = 'Send Message';
-      resetBotProtection();
       renderStep();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
