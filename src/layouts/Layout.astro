@@ -32,7 +32,7 @@ const organizationSchema = {
   '@id': `${site}/#organization`,
   name: 'Davis Weather Station',
   url: site,
-  logo: new URL(asset('/favicon.svg'), site).toString(),
+  logo: new URL(asset('/images/brand/davis-weather-station-icon-512.png'), site).toString(),
   description:
     'An independent directory of authorized Davis Instruments resellers, with a product catalog, smart buying guide, and FAQ.',
 };
@@ -54,7 +54,11 @@ const websiteSchema = {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href={asset('/favicon.svg')} />
+    <link rel="icon" href={asset('/favicon.ico?v=20261030')} sizes="48x48" />
+    <link rel="icon" type="image/png" sizes="192x192" href={asset('/images/brand/davis-weather-station-icon-192.png')} />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#00529B" />
     <link rel="canonical" href={canonical} />
     <link rel="alternate" hreflang="en" href={canonical} />
     <link rel="alternate" hreflang="x-default" href={canonical} />
@@ -105,8 +109,28 @@ const websiteSchema = {
       <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
           <div class="flex items-center">
-            <a href="/" class="flex items-center space-x-2">
-              <span class="text-xl font-bold text-[#00529B]">Davis Weather Station</span>
+            <a href="/" aria-label="Davis Weather Station" class="flex items-center flex-shrink-0">
+              <img
+                class="site-logo site-logo-light h-9 md:h-10 w-auto"
+                src={asset('/images/brand/davis-weather-station-logo-400.webp')}
+                srcset={`${asset('/images/brand/davis-weather-station-logo-400.webp')} 400w, ${asset('/images/brand/davis-weather-station-logo.webp')} 800w`}
+                sizes="200px"
+                width="800"
+                height="212"
+                alt=""
+                fetchpriority="high"
+                decoding="async"
+              />
+              <img
+                class="site-logo site-logo-dark h-9 md:h-10 w-auto"
+                src={asset('/images/brand/davis-weather-station-logo-light-400.webp')}
+                srcset={`${asset('/images/brand/davis-weather-station-logo-light-400.webp')} 400w, ${asset('/images/brand/davis-weather-station-logo-light.webp')} 800w`}
+                sizes="200px"
+                width="800"
+                height="212"
+                alt=""
+                decoding="async"
+              />
             </a>
           </div>
           <div class="hidden md:flex items-center space-x-6">
@@ -201,8 +225,17 @@ const websiteSchema = {
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-x-8 gap-y-10">
           <!-- Brand -->
           <div class="sm:col-span-2 lg:col-span-4">
-            <a href="/" class="inline-flex items-center gap-2 mb-4">
-              <span class="text-xl font-bold text-white">Davis Weather Station</span>
+            <a href="/" aria-label="Davis Weather Station" class="inline-flex items-center gap-2 mb-4">
+              <img
+                src={asset('/images/brand/davis-weather-station-logo-light-400.webp')}
+                srcset={`${asset('/images/brand/davis-weather-station-logo-light-400.webp')} 400w, ${asset('/images/brand/davis-weather-station-logo-light.webp')} 800w`}
+                sizes="200px"
+                width="800"
+                height="212"
+                alt="Davis Weather Station"
+                class="h-10 w-auto"
+                decoding="async"
+              />
             </a>
             <p class="text-gray-400 mb-4 max-w-sm leading-relaxed">
               An independent directory of authorized Davis Instruments resellers, with a complete product catalog,

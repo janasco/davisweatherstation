@@ -1,0 +1,21 @@
+{
+  "name": "Davis Weather Station",
+  "short_name": "Davis Weather",
+  "description": "Independent directory of authorized Davis Instruments resellers.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#00529B",
+  "icons": [
+    {
+      "src": "/images/brand/davis-weather-station-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/brand/davis-weather-station-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

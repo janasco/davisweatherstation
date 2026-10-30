@@ -438,3 +438,16 @@ body.cookie-open .floating-actions {
     display: none !important;
   }
 }
+
+/* ---------- Brand logo variants ---------- */
+.site-logo-dark {
+  display: none;
+}
+
+html.dark .site-logo-light {
+  display: none !important;
+}
+
+html.dark .site-logo-dark {
+  display: block !important;
+}
