@@ -756,6 +756,30 @@ const websiteSchema = {
     }
     document.querySelectorAll('a[href^="http"]').forEach(addUtm);
 
+    // ---------- Outbound click analytics ----------
+    function trackOutboundClick(link) {
+      if (location.hostname !== 'davisweatherstation.com') return;
+      try {
+        const url = new URL(link.href);
+        if (url.hostname === 'davisweatherstation.com' || url.hostname.endsWith('.davisweatherstation.com')) return;
+        const payload = JSON.stringify({
+          target: link.href.slice(0, 500),
+          path: location.pathname,
+          type: link.dataset.outbound || 'external',
+        });
+        fetch('/api/track-click', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: payload,
+          keepalive: true,
+        }).catch(() => {});
+      } catch (e) {}
+    }
+    document.addEventListener('click', (event) => {
+      const target = event.target instanceof Element ? event.target.closest('a[href^="http"]') : null;
+      if (target) trackOutboundClick(target);
+    }, { capture: true });
+
     // ---------- Print: open FAQ/details ----------
     let printOpened = [];
     window.addEventListener('beforeprint', () => {

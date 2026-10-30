@@ -76,7 +76,7 @@ const schema = { '@context': 'https://schema.org', '@graph': [businessSchema, br
             )}
           </div>
           {reseller.website && (
-            <a href={reseller.website} target="_blank" rel="noopener noreferrer" class="inline-flex items-center bg-white text-[#00529B] px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors self-start">
+            <a href={reseller.website} data-outbound="reseller" target="_blank" rel="noopener noreferrer" class="inline-flex items-center bg-white text-[#00529B] px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors self-start">
               Visit Website
               <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -247,7 +247,7 @@ const schema = { '@context': 'https://schema.org', '@graph': [businessSchema, br
                   </svg>
                   <div>
                     <p class="font-medium text-gray-900 mb-1">Website</p>
-                    <a href={reseller.website} target="_blank" rel="noopener noreferrer" class="text-[#00529B] hover:underline text-sm break-all">{reseller.website}</a>
+                    <a href={reseller.website} data-outbound="reseller" target="_blank" rel="noopener noreferrer" class="text-[#00529B] hover:underline text-sm break-all">{reseller.website}</a>
                   </div>
                 </div>
               )}
