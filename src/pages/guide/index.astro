@@ -820,6 +820,10 @@ const resellerIndex = resellers
 
       const customerName = senderName.value.trim() || '[Your Name]';
       const customerEmail = senderEmail.value.trim() || '[Your Email]';
+      const enterpriseSetup = answers.coverage !== 'single_site' || answers.power === 'no_power';
+      const cellularRouterNote = answers.connectivity === 'yes_cellular' && !enterpriseSetup
+        ? '\n\nNOTE: A cellular router is required at the site for WeatherLink cloud upload.'
+        : '';
 
       emailMessage.value = `Dear ${reseller ? reseller.name : 'Authorized Davis Instruments Reseller'} Team,
 
@@ -836,7 +840,7 @@ MY REQUIREMENTS:
 • Connectivity: ${labelFor('connectivity', answers.connectivity)}
 • Sensors: ${labelFor('sensors', answers.sensors)}
 • Wireless Range: ${labelFor('range', answers.range)}
-• Location/Country: ${country}
+• Location/Country: ${country}${cellularRouterNote}
 
 Please provide:
 - Itemized pricing including shipping
