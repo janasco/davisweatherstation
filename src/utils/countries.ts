@@ -17,6 +17,18 @@ const prioritySingleCountries = new Set([
   'Spain',
   'Italy',
   'Ireland',
+  'Switzerland',
+  'Sweden',
+  'Norway',
+  'Denmark',
+  'Belgium',
+  'Austria',
+  'Finland',
+  'Czech Republic',
+  'New Zealand',
+  'South Africa',
+  'Brazil',
+  'India',
 ]);
 
 export function countrySlug(name: string): string {
