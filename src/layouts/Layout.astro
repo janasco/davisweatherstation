@@ -313,8 +313,10 @@ const websiteSchema = {
         <div class="border-t border-gray-800 mt-10 pt-7 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p class="text-sm text-gray-400 text-center sm:text-left">
             &copy; {new Date().getFullYear()} Davis Weather Station.
-            <span class="mx-2 text-gray-600">&middot;</span>
-            <span class="text-xs text-gray-400">This page: <span data-page-views class="inline-block min-w-[2ch] animate-pulse text-gray-400">--</span> views</span>
+            <span data-page-views-wrap hidden>
+              <span class="mx-2 text-gray-600">&middot;</span>
+              <span class="text-xs text-gray-400">This page: <span data-page-views>0</span> views</span>
+            </span>
             <span class="mx-2 text-gray-600">&middot;</span>
             <span class="text-xs text-gray-400">Site updated: {siteUpdated}</span>
           </p>
@@ -458,19 +460,25 @@ const websiteSchema = {
     updateScrollUI();
 
     // ---------- Page views ----------
+    function hidePageViews() {
+      document.querySelectorAll('[data-page-views-wrap]').forEach((el) => {
+        el.setAttribute('hidden', '');
+        el.style.display = 'none';
+      });
+    }
+    function showPageViews() {
+      document.querySelectorAll('[data-page-views-wrap]').forEach((el) => {
+        el.removeAttribute('hidden');
+        el.style.display = '';
+      });
+    }
     function trackPageView() {
       if (document.documentElement.dataset.pageViews === 'off') {
-        document.querySelectorAll('[data-page-views], #page-views').forEach((el) => {
-          el.textContent = '—';
-          el.classList.remove('animate-pulse');
-        });
+        hidePageViews();
         return;
       }
       if (location.hostname !== 'davisweatherstation.com') {
-        document.querySelectorAll('[data-page-views], #page-views').forEach((el) => {
-          el.textContent = '—';
-          el.classList.remove('animate-pulse');
-        });
+        hidePageViews();
         return;
       }
       const path = location.pathname;
@@ -486,16 +494,12 @@ const websiteSchema = {
           el.textContent = value.toLocaleString('en-US');
           el.classList.remove('animate-pulse');
         });
+        showPageViews();
         window.dispatchEvent(new CustomEvent('dws:page-views', { detail: { views: value } }));
       };
 
       const fallback = setTimeout(() => {
-        document.querySelectorAll('[data-page-views], #page-views').forEach((el) => {
-          if ((el.textContent || '').trim() === '--') {
-            el.textContent = '—';
-            el.classList.remove('animate-pulse');
-          }
-        });
+        hidePageViews();
       }, 6000);
 
       if (cached !== null) {

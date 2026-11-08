@@ -4,5 +4,7 @@ dist
 .env
 .env.*
 .DS_Store
+.wrangler
+.dev.vars*
 
 src/data/generated
