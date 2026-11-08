@@ -21,6 +21,9 @@ export interface Reseller {
   products?: string[];
   additionalInfo?: string;
   image?: string;
+  latitude?: number;
+  longitude?: number;
+  geoPrecision?: string;
   updatedAt?: string;
 }
 
