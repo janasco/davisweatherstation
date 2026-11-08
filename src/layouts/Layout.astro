@@ -315,7 +315,7 @@ const websiteSchema = {
             &copy; {new Date().getFullYear()} Davis Weather Station.
             <span data-page-views-wrap hidden>
               <span class="mx-2 text-gray-600">&middot;</span>
-              <span class="text-xs text-gray-400">This page: <span data-page-views>0</span> views</span>
+              <span class="text-xs text-gray-400">This page: <span data-page-views>0</span> <span data-page-views-suffix>views</span></span>
             </span>
             <span class="mx-2 text-gray-600">&middot;</span>
             <span class="text-xs text-gray-400">Site updated: {siteUpdated}</span>
@@ -493,6 +493,11 @@ const websiteSchema = {
         document.querySelectorAll('[data-page-views]').forEach((el) => {
           el.textContent = value.toLocaleString('en-US');
           el.classList.remove('animate-pulse');
+        });
+        document.querySelectorAll('[data-page-views-suffix]').forEach((el) => {
+          const singular = el.getAttribute('data-singular') || 'view';
+          const plural = el.getAttribute('data-plural') || 'views';
+          el.textContent = value === 1 ? singular : plural;
         });
         showPageViews();
         window.dispatchEvent(new CustomEvent('dws:page-views', { detail: { views: value } }));
