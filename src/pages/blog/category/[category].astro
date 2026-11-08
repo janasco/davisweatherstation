@@ -1,0 +1,145 @@
+---
+export const prerender = false;
+
+import Layout from '../../../layouts/Layout.astro';
+import BlogCard from '../../../components/BlogCard.astro';
+import { env } from 'cloudflare:workers';
+import { blogCategorySlug } from '../../../utils/blog';
+
+const cfEnv = env as unknown as { DB: D1Database };
+const { category = '' } = Astro.params;
+const url = new URL(Astro.request.url);
+const page = Math.max(1, Number(url.searchParams.get('page')) || 1);
+const perPage = 9;
+
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=300, stale-while-revalidate=600');
+
+interface BlogPostRow {
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  featured_image: string | null;
+  image_alt: string | null;
+  published_at: string;
+  reading_time: number;
+  era: string | null;
+}
+
+let displayCategory = '';
+let posts: BlogPostRow[] = [];
+let total = 0;
+let categories: { category: string; count: number }[] = [];
+
+try {
+  const db = cfEnv.DB;
+  const allCategories = await db
+    .prepare(
+      `SELECT category, COUNT(*) AS count
+       FROM blog_posts
+       WHERE status IN ('scheduled', 'published') AND published_at <= datetime('now')
+       GROUP BY category`
+    )
+    .all<{ category: string; count: number }>();
+  categories = allCategories.results || [];
+  displayCategory = categories.find((item) => blogCategorySlug(item.category) === category)?.category || '';
+
+  if (displayCategory) {
+    const [countRow, postRows] = await Promise.all([
+      db
+        .prepare(
+          `SELECT COUNT(*) AS n FROM blog_posts
+           WHERE category = ? AND status IN ('scheduled', 'published') AND published_at <= datetime('now')`
+        )
+        .bind(displayCategory)
+        .first<{ n: number }>(),
+      db
+        .prepare(
+          `SELECT slug, title, excerpt, category, featured_image, image_alt, published_at, reading_time, era
+           FROM blog_posts
+           WHERE category = ? AND status IN ('scheduled', 'published') AND published_at <= datetime('now')
+           ORDER BY published_at DESC LIMIT ? OFFSET ?`
+        )
+        .bind(displayCategory, perPage, (page - 1) * perPage)
+        .all<BlogPostRow>(),
+    ]);
+    total = countRow?.n || 0;
+    posts = postRows.results || [];
+  }
+} catch {
+  displayCategory = '';
+}
+
+if (!displayCategory) Astro.response.status = 404;
+
+const pageCount = Math.max(1, Math.ceil(total / perPage));
+---
+
+<Layout
+  title={displayCategory ? `${displayCategory} | Weather Notes` : 'Category Not Found'}
+  description={displayCategory ? `Weather station articles about ${displayCategory.toLowerCase()}.` : 'The requested blog category could not be found.'}
+>
+  {displayCategory ? (
+    <>
+      <section class="bg-gradient-to-br from-[#00529B] to-[#003d73] text-white py-14">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <nav class="mb-6 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-blue-100">
+            <a href="/" class="hover:text-white">Home</a>
+            <span class="text-blue-300">/</span>
+            <a href="/blog/" class="hover:text-white">Weather Notes</a>
+            <span class="text-blue-300">/</span>
+            <span class="text-white font-medium">{displayCategory}</span>
+          </nav>
+          <h1 class="text-4xl md:text-5xl font-bold mb-3">{displayCategory}</h1>
+          <p class="text-lg text-blue-100">{total} {total === 1 ? 'article' : 'articles'} in this category</p>
+        </div>
+      </section>
+
+      <section class="py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {posts.length > 0 ? (
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {posts.map((post) => <BlogCard post={post} />)}
+            </div>
+          ) : (
+            <p class="text-center text-gray-500 py-12">No articles in this category yet.</p>
+          )}
+
+          {pageCount > 1 && (
+            <nav class="mt-10 flex items-center justify-center gap-3" aria-label="Category pagination">
+              {page > 1 && (
+                <a href={page === 2 ? `/blog/category/${category}/` : `/blog/category/${category}/?page=${page - 1}`} class="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm font-semibold text-gray-700 hover:border-[#00529B]">
+                  ← Newer
+                </a>
+              )}
+              <span class="text-sm text-gray-500">Page {page} of {pageCount}</span>
+              {page < pageCount && (
+                <a href={`/blog/category/${category}/?page=${page + 1}`} class="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm font-semibold text-gray-700 hover:border-[#00529B]">
+                  Older →
+                </a>
+              )}
+            </nav>
+          )}
+
+          <div class="mt-10 flex flex-wrap gap-2">
+            <a href="/blog/" class="px-3 py-1.5 rounded-full text-sm font-semibold bg-[#00529B] text-white">All posts</a>
+            {categories.filter((item) => item.category !== displayCategory).map((item) => (
+              <a href={`/blog/category/${blogCategorySlug(item.category)}/`} class="px-3 py-1.5 rounded-full text-sm font-semibold bg-white border border-gray-200 text-gray-700 hover:border-[#00529B] hover:text-[#00529B]">
+                {item.category} <span class="text-gray-400">({item.count})</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    </>
+  ) : (
+    <section class="py-24">
+      <div class="max-w-xl mx-auto px-4 text-center">
+        <p class="text-sm font-bold uppercase tracking-widest text-[#C2410C] mb-3">404</p>
+        <h1 class="text-3xl font-bold mb-3">Category not found</h1>
+        <p class="text-gray-600 mb-6">This category may not have any published articles yet.</p>
+        <a href="/blog/" class="inline-flex px-5 py-2.5 rounded-lg bg-[#00529B] text-white font-semibold">Browse Weather Notes</a>
+      </div>
+    </section>
+  )}
+</Layout>

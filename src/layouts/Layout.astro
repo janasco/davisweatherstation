@@ -58,6 +58,7 @@ const websiteSchema = {
     <link rel="icon" type="image/png" sizes="192x192" href={asset('/images/brand/davis-weather-station-icon-192.png')} />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
+    <link rel="alternate" type="application/rss+xml" title="Weather Notes RSS" href="/blog/rss.xml" />
     <meta name="theme-color" content="#00529B" />
     <link rel="canonical" href={canonical} />
     <link rel="alternate" hreflang="en" href={canonical} />
@@ -93,7 +94,7 @@ const websiteSchema = {
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Davis Weather Station — authorized resellers, product catalog, and buying guide" />
+    <meta property="og:image:alt" content="Davis Weather Station: authorized resellers, product catalog, and buying guide" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={metaDescription} />
@@ -133,7 +134,7 @@ const websiteSchema = {
               />
             </a>
           </div>
-          <div class="hidden md:flex items-center space-x-6">
+          <div class="hidden lg:flex items-center space-x-5 xl:space-x-6">
             <a href="/" class="text-gray-700 hover:text-[#00529B] font-medium transition-colors relative group">
               Home
               <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#00529B] transition-all group-hover:w-full"></span>
@@ -152,6 +153,10 @@ const websiteSchema = {
             </a>
             <a href="/faq/" class="text-gray-700 hover:text-[#00529B] font-medium transition-colors relative group">
               FAQ
+              <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#00529B] transition-all group-hover:w-full"></span>
+            </a>
+            <a href="/blog/" class="text-gray-700 hover:text-[#00529B] font-medium transition-colors relative group">
+              Blog
               <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#00529B] transition-all group-hover:w-full"></span>
             </a>
             <a href="/about/" class="text-gray-700 hover:text-[#00529B] font-medium transition-colors relative group">
@@ -191,7 +196,7 @@ const websiteSchema = {
             <button
               id="mobile-menu-button"
               type="button"
-              class="md:hidden inline-flex items-center justify-center p-2 rounded-lg text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#00529B]"
+              class="lg:hidden inline-flex items-center justify-center p-2 rounded-lg text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#00529B]"
               aria-controls="mobile-menu"
               aria-expanded="false"
               aria-label="Open navigation menu"
@@ -203,13 +208,14 @@ const websiteSchema = {
           </div>
         </div>
       </nav>
-      <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 bg-white">
+      <div id="mobile-menu" class="hidden lg:hidden border-t border-gray-200 bg-white">
         <nav class="max-w-7xl mx-auto px-4 py-4 space-y-1" aria-label="Mobile navigation">
           <a href="/" class="block px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-[#00529B] font-medium">Home</a>
           <a href="/guide/" class="block px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-[#00529B] font-medium">Buying Guide</a>
           <a href="/resellers/" class="block px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-[#00529B] font-medium">Resellers</a>
           <a href="/products/" class="block px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-[#00529B] font-medium">Products</a>
           <a href="/faq/" class="block px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-[#00529B] font-medium">FAQ</a>
+          <a href="/blog/" class="block px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-[#00529B] font-medium">Blog</a>
           <a href="/about/" class="block px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-[#00529B] font-medium">About</a>
           <a href="/contact/" class="block px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-[#00529B] font-medium">Contact</a>
         </nav>
@@ -266,6 +272,7 @@ const websiteSchema = {
               <li><a href="/products/" class="text-gray-400 hover:text-white transition-colors">Products</a></li>
               <li><a href="/guide/" class="text-gray-400 hover:text-white transition-colors">Buying Guide</a></li>
               <li><a href="/faq/" class="text-gray-400 hover:text-white transition-colors">FAQ</a></li>
+              <li><a href="/blog/" class="text-gray-400 hover:text-white transition-colors">Weather Notes</a></li>
             </ul>
           </div>
 

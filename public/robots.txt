@@ -4,3 +4,4 @@ Disallow: /api/
 Disallow: /admin/
 
 Sitemap: https://davisweatherstation.com/sitemap.xml
+Sitemap: https://davisweatherstation.com/blog-sitemap.xml

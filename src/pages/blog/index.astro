@@ -1,0 +1,158 @@
+---
+export const prerender = false;
+
+import Layout from '../../layouts/Layout.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import { env } from 'cloudflare:workers';
+import { blogCategorySlug } from '../../utils/blog';
+
+const cfEnv = env as unknown as { DB: D1Database };
+const url = new URL(Astro.request.url);
+const page = Math.max(1, Number(url.searchParams.get('page')) || 1);
+const perPage = 9;
+
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=300, stale-while-revalidate=600');
+
+interface BlogPostRow {
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  featured_image: string | null;
+  image_alt: string | null;
+  published_at: string;
+  reading_time: number;
+  era: string | null;
+}
+
+let posts: BlogPostRow[] = [];
+let total = 0;
+let categories: { category: string; count: number }[] = [];
+
+try {
+  const db = cfEnv.DB;
+  const [countRow, postRows, categoryRows] = await Promise.all([
+    db
+      .prepare("SELECT COUNT(*) AS n FROM blog_posts WHERE status IN ('scheduled', 'published') AND published_at <= datetime('now')")
+      .first<{ n: number }>(),
+    db
+      .prepare(
+        `SELECT slug, title, excerpt, category, featured_image, image_alt, published_at, reading_time, era
+         FROM blog_posts
+         WHERE status IN ('scheduled', 'published') AND published_at <= datetime('now')
+         ORDER BY published_at DESC
+         LIMIT ? OFFSET ?`
+      )
+      .bind(perPage, (page - 1) * perPage)
+      .all<BlogPostRow>(),
+    db
+      .prepare(
+        `SELECT category, COUNT(*) AS count
+         FROM blog_posts
+         WHERE status IN ('scheduled', 'published') AND published_at <= datetime('now')
+         GROUP BY category
+         ORDER BY count DESC, category ASC`
+      )
+      .all<{ category: string; count: number }>(),
+  ]);
+
+  total = countRow?.n || 0;
+  posts = postRows.results || [];
+  categories = categoryRows.results || [];
+} catch {
+  // The blog should not take the rest of the site down if the table is unavailable.
+}
+
+const pageCount = Math.max(1, Math.ceil(total / perPage));
+const featured = page === 1 ? posts[0] : undefined;
+const gridPosts = featured ? posts.slice(1) : posts;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Blog',
+  name: 'Weather Notes',
+  description: 'Practical weather station guides, installation advice, and field notes from Davis Weather Station.',
+  url: 'https://davisweatherstation.com/blog/',
+  publisher: { '@id': 'https://davisweatherstation.com/#organization' },
+};
+---
+
+<Layout
+  title="Weather Notes: Davis Weather Station Blog"
+  description="Practical guides for weather station owners, growers, researchers, and anyone who wants better local weather data."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+
+  <section class="bg-gradient-to-br from-[#00529B] to-[#003d73] text-white py-14">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav class="mb-6 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-blue-100">
+        <a href="/" class="hover:text-white">Home</a>
+        <span class="text-blue-300">/</span>
+        <span class="text-white font-medium">Weather Notes</span>
+      </nav>
+      <p class="text-sm font-bold uppercase tracking-widest text-blue-200 mb-3">The Davis Weather Station blog</p>
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">Weather Notes</h1>
+      <p class="text-lg text-blue-100 max-w-3xl">
+        Practical guides for weather station owners, growers, researchers, and anyone who wants better local weather data.
+      </p>
+    </div>
+  </section>
+
+  <section class="py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {categories.length > 0 && (
+        <div class="flex flex-wrap items-center gap-2 mb-8">
+          <a href="/blog/" class="px-3 py-1.5 rounded-full text-sm font-semibold bg-[#00529B] text-white">All posts</a>
+          {categories.map((category) => (
+            <a href={`/blog/category/${blogCategorySlug(category.category)}/`} class="px-3 py-1.5 rounded-full text-sm font-semibold bg-white border border-gray-200 text-gray-700 hover:border-[#00529B] hover:text-[#00529B] transition-colors">
+              {category.category} <span class="text-gray-400">({category.count})</span>
+            </a>
+          ))}
+        </div>
+      )}
+
+      {posts.length === 0 ? (
+        <div class="bg-white border border-gray-200 rounded-2xl p-10 text-center">
+          <p class="text-4xl mb-3" aria-hidden="true">🌤️</p>
+          <h2 class="text-2xl font-bold mb-2">The first stories are on the way</h2>
+          <p class="text-gray-600">New weather notes are being prepared. Check back soon.</p>
+        </div>
+      ) : (
+        <>
+          {featured && (
+            <div class="mb-10">
+              <BlogCard post={featured} featured />
+            </div>
+          )}
+
+          {gridPosts.length > 0 && (
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {gridPosts.map((post) => <BlogCard post={post} />)}
+            </div>
+          )}
+
+          {pageCount > 1 && (
+            <nav class="mt-10 flex items-center justify-center gap-3" aria-label="Blog pagination">
+              {page > 1 && (
+                <a href={page === 2 ? '/blog/' : `/blog/?page=${page - 1}`} class="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm font-semibold text-gray-700 hover:border-[#00529B] hover:text-[#00529B]">
+                  ← Newer
+                </a>
+              )}
+              <span class="text-sm text-gray-500">Page {page} of {pageCount}</span>
+              {page < pageCount && (
+                <a href={`/blog/?page=${page + 1}`} class="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm font-semibold text-gray-700 hover:border-[#00529B] hover:text-[#00529B]">
+                  Older →
+                </a>
+              )}
+            </nav>
+          )}
+        </>
+      )}
+
+      <div class="mt-10 flex flex-wrap items-center gap-4 text-sm">
+        <a href="/blog/rss.xml" class="font-semibold text-[#00529B] hover:underline">RSS feed</a>
+        <a href="/guide/" class="font-semibold text-[#00529B] hover:underline">Build a station with the buying guide →</a>
+      </div>
+    </div>
+  </section>
+</Layout>
