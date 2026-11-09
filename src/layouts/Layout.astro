@@ -726,7 +726,11 @@ const websiteSchema = {
         if (!response.ok) throw new Error(data.error || 'Subscription failed.');
         const date = new Date(data.subscribedAt || Date.now()).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
         try { localStorage.setItem(newsletterKey, date); } catch (e) {}
-        if (newsletterStatus) newsletterStatus.textContent = `Subscribed on ${date}.`;
+        if (newsletterStatus) {
+          newsletterStatus.textContent = data.alreadySubscribed
+            ? 'You are already subscribed.'
+            : `Subscribed on ${date}.`;
+        }
         if (newsletterEmail) newsletterEmail.value = '';
       } catch (error) {
         if (newsletterStatus) newsletterStatus.textContent = error instanceof Error ? error.message : 'Subscription is temporarily unavailable.';
