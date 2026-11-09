@@ -38,9 +38,15 @@ import LegalLayout from '../layouts/LegalLayout.astro';
     sensitive information in the message field.
   </p>
   <p>
-    If you subscribe to the newsletter, we collect your email address and the date you subscribed so we can send
-    occasional weather-station tips and updates. You can ask us to remove your address at any time through the
-    contact page.
+    If you subscribe to the newsletter, we collect your email address, the date you subscribed, and a random
+    unsubscribe token. We use these to send Weather Notes blog posts and occasional weather-station updates. Every
+    newsletter email includes an unsubscribe link, and you can also ask us to remove your address through the contact
+    page.
+  </p>
+  <p>
+    We keep a delivery record for each subscriber and blog post so we do not send the same email twice and can retry a
+    failed delivery. The record includes the post, the subscriber, the delivery status, the number of attempts, and any
+    error message. We do not sell or rent newsletter addresses.
   </p>
 
   <h2>4. Information collected automatically</h2>

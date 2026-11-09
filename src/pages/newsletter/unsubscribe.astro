@@ -1,0 +1,102 @@
+---
+export const prerender = false;
+
+import Layout from '../../layouts/Layout.astro';
+import { env } from 'cloudflare:workers';
+
+const cfEnv = env as unknown as { DB: D1Database };
+
+Astro.response.headers.set('Cache-Control', 'no-store');
+Astro.response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+
+const token = (Astro.url.searchParams.get('token') || '').trim().toLowerCase();
+const isToken = /^[a-f0-9]{32}$/.test(token);
+
+let found = false;
+let email = '';
+let alreadyUnsubscribed = false;
+
+if (isToken) {
+  try {
+    const subscriber = await cfEnv.DB.prepare(
+      'SELECT email, unsubscribed_at FROM newsletter_subscribers WHERE unsubscribe_token = ?'
+    )
+      .bind(token)
+      .first<{ email: string; unsubscribed_at: string | null }>();
+
+    if (subscriber) {
+      found = true;
+      email = subscriber.email;
+      alreadyUnsubscribed = Boolean(subscriber.unsubscribed_at);
+    }
+  } catch {
+    // The page still renders an error state if the database is unavailable.
+  }
+}
+
+const maskEmail = (value: string) => {
+  const [local, domain] = value.split('@');
+  if (!domain) return 'your email address';
+  const visible = local.slice(0, 1);
+  const hidden = '*'.repeat(Math.max(2, Math.min(6, local.length - 1)));
+  return `${visible}${hidden}@${domain}`;
+};
+
+const complete = alreadyUnsubscribed;
+---
+
+<Layout
+  title="Unsubscribe from Weather Notes"
+  description="Manage your Weather Notes newsletter subscription from Davis Weather Station."
+>
+  <section class="py-16 md:py-24">
+    <div class="max-w-xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-white border border-gray-200 rounded-2xl p-8 md:p-10 shadow-sm text-center">
+        <p class="text-xs font-bold uppercase tracking-widest text-[#C2410C] mb-3">Weather Notes</p>
+
+        {found && complete ? (
+          <>
+            <h1 class="text-3xl font-bold mb-4">You are unsubscribed</h1>
+            <p class="text-gray-600 leading-relaxed">
+              {maskEmail(email)} will no longer receive new Weather Notes posts by email. You can still read the blog
+              at any time.
+            </p>
+            <div class="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+              <a href="/blog/" class="px-5 py-2.5 rounded-lg bg-[#00529B] text-white font-semibold hover:bg-[#003d73] transition-colors">Read the blog</a>
+              <a href="/" class="px-5 py-2.5 rounded-lg bg-white border border-gray-300 text-gray-700 font-semibold hover:border-[#00529B] hover:text-[#00529B] transition-colors">Back to the site</a>
+            </div>
+          </>
+        ) : found ? (
+          <>
+            <h1 class="text-3xl font-bold mb-4">Unsubscribe from Weather Notes?</h1>
+            <p class="text-gray-600 leading-relaxed">
+              This will stop new blog post emails to <strong>{maskEmail(email)}</strong>. You can resubscribe later
+              from any page on the site.
+            </p>
+            <form method="POST" action="/api/newsletter/unsubscribe" class="mt-8">
+              <input type="hidden" name="token" value={token} />
+              <button type="submit" class="px-5 py-2.5 rounded-lg bg-[#FF6B35] text-white font-semibold hover:bg-[#e55a28] transition-colors">
+                Unsubscribe
+              </button>
+            </form>
+            <p class="mt-5 text-sm text-gray-500">
+              Changed your mind? <a href="/" class="font-semibold text-[#00529B] hover:underline">Return to the site</a>.
+            </p>
+          </>
+        ) : (
+          <>
+            <h1 class="text-3xl font-bold mb-4">This link is not valid</h1>
+            <p class="text-gray-600 leading-relaxed">
+              The unsubscribe link may be incomplete or out of date. If you still receive Weather Notes emails and want
+              to stop them, contact us and we will remove your address.
+            </p>
+            <div class="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+              <a href="/contact/" class="px-5 py-2.5 rounded-lg bg-[#00529B] text-white font-semibold hover:bg-[#003d73] transition-colors">Contact us</a>
+              <a href="/" class="px-5 py-2.5 rounded-lg bg-white border border-gray-300 text-gray-700 font-semibold hover:border-[#00529B] hover:text-[#00529B] transition-colors">Back to the site</a>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  </section>
+</Layout>
