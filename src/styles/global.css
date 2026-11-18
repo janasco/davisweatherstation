@@ -301,6 +301,10 @@ html.dark [class*="bg-gradient-to-"]:is(
   background-color: #0b1220 !important;
 }
 
+html.dark .gradient-title {
+  background-image: linear-gradient(to right, #60a5fa, #93c5fd) !important;
+}
+
 html.dark .text-gray-900,
 html.dark .text-gray-800,
 html.dark .text-gray-700,
